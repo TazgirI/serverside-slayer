@@ -1,0 +1,14 @@
+{
+  "levels":
+  {
+    "1":
+    {
+      "zombie":
+      {
+        "questAverage": 10,
+        "questSkew": 5
+      }
+    }
+  }
+
+}
