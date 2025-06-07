@@ -1,5 +1,7 @@
 package net.tazgirl.slayerquests;
 
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.neoforged.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -34,6 +36,11 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(SlayerQuests.MODID)
 public class SlayerQuests
@@ -48,7 +55,7 @@ public class SlayerQuests
     public SlayerQuests(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::setup);
 
         DataAttachment.register(modEventBus);
 
@@ -61,17 +68,9 @@ public class SlayerQuests
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event)
+    private void setup(FMLCommonSetupEvent event)
     {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
-
-        if (Config.logDirtBlock)
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
+        JSONToConfig();
     }
 
 
@@ -82,6 +81,34 @@ public class SlayerQuests
     {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
+    }
+
+    public void JSONToConfig()
+    {
+        Path configDir = FMLPaths.CONFIGDIR.get();
+        Path targetFile = configDir.resolve("SlayerQuests.json");
+
+        if (Files.notExists(targetFile))
+        {
+            try (InputStream in = SlayerQuests.class.getResourceAsStream("/data/slayerquests/SlayerQuests.json"))
+            {
+                if(in != null)
+                {
+                    Files.copy(in, targetFile);
+                }
+                else
+                {
+                    LOGGER.error("No SlayerQuests.json could be found");
+                    throw new RuntimeException("Missing SlayerQuests.json in '/data/slayerquests/SlayerQuests.json' or config directory");
+                }
+
+            }
+            catch (IOException error) {
+                LOGGER.error("SlayerQuests.json generation failed", error);
+                throw new RuntimeException("Could not generate SlayerQuests.json", error);
+            }
+        }
+
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
