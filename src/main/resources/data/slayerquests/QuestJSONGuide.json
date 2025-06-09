@@ -1,0 +1,38 @@
+{
+  "tiers": {
+    "You can rename the objects directly within tiers": {
+      "You can also rename these objects however they are not used anywhere so do not matter": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 20,
+        "questSkew": 8
+      },
+      "Do not rename the variables nested within this however": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 20,
+        "questSkew": 8
+      }
+    },
+    "Take care as whatever is put as this object is returned as the plaintext for the tier in quest granting text":
+    {
+      "If the mobID doesn't exist, an error WILL be thrown": {
+        "mobID": "madeup:trumpet",
+        "questAverage": 20,
+        "questSkew": 8
+      }
+    },
+    "You can have as many tiers of quest as you like, just depends on how your choice of quest giver handles it (any quest giver packaged with the base mod can handle any number of tiers":
+    {
+      "You can also have as many quests as you like within a tier": {
+        "mobID": "beware:loadingtimesscalewithquests",
+        "questAverage": 2000000,
+        "questSkew": 8
+      }
+    },
+    "Currently undefined behaviour includes":
+    {
+      "Tiers with no quests": {},
+      "Quests requesting amounts below zero": {},
+      "Quests missing the expected variables": {}
+    }
+  }
+}

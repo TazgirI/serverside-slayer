@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(SlayerQuests.MODID)
@@ -49,6 +50,8 @@ public class SlayerQuests
     public static final String MODID = "slayerquests";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
+
+    public static List<StoreJSON.QuestTier> tiers;
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -71,6 +74,7 @@ public class SlayerQuests
     private void setup(FMLCommonSetupEvent event)
     {
         JSONToConfig();
+        tiers = StoreJSON.ProcessJSON();
     }
 
 
@@ -111,16 +115,4 @@ public class SlayerQuests
 
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-            // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-        }
-    }
 }

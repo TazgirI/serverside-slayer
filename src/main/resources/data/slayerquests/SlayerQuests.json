@@ -5,10 +5,35 @@
     {
       "zombie":
       {
+        "mobID": "minecraft:zombie",
         "questAverage": 10,
         "questSkew": 5
+      },
+      "skeleton":
+      {
+        "mobID": "minecraft:skeleton",
+        "questAverage" : 7,
+        "questSkew" : 2
       }
+    },
+    "2":
+    {
+      "zombie":
+      {
+        "mobID": "minecraft:zombie",
+        "questAverage": 20,
+        "questSkew": 8
+      },
+      "skeleton":
+      {
+        "mobID": "minecraft:skeleton",
+        "questAverage" : 16,
+        "questSkew" : 4
+      }
+    },
+    "3":
+    {
+
     }
   }
-
 }
