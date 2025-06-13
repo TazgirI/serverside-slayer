@@ -1,6 +1,5 @@
 package net.tazgirl.slayerquests;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 public class GrantQuests
@@ -13,7 +12,9 @@ public class GrantQuests
         {
             if (playerQuest.questCurrent() >= playerQuest.questCap())
             {
-                // Award loot
+                DataAttachment.SlayerExperienceRecord playerExp = player.getData(DataAttachment.SLAYER_EXPERIENCE);
+                int newExp = playerExp.exp() + playerQuest.slayerExp();
+                player.setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.SlayerExperienceRecord(SlayerQuestsPublicFuncs.ExpToLevel(newExp),newExp));
                 return "fulfilled";
             }
 
@@ -26,15 +27,6 @@ public class GrantQuests
         }
     }
 
-    public CompoundTag QuestTag(String mob, int max)
-    {
-        CompoundTag tag = new CompoundTag();
 
-        tag.putString("QuestTarget", mob);
-        tag.putInt("QuestCurrent", 0);
-        tag.putInt("QuestCap", max);
-
-        return tag;
-    }
 
 }

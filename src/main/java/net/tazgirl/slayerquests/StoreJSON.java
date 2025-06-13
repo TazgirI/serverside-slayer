@@ -6,7 +6,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLPaths;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -22,6 +21,10 @@ public class StoreJSON
         String mob;
         int questMean;
         int questSkew;
+        int questExp;
+        int questMin;
+        int questMax;
+
 
         public void setMob(String newMob)
         {
@@ -35,8 +38,25 @@ public class StoreJSON
 
         public void setQuestSkew(int newQuestSkew)
         {
-            questMean = newQuestSkew;
+            questSkew = newQuestSkew;
         }
+
+        public void setQuestExp(int newQuestExp)
+        {
+            questExp = newQuestExp;
+        }
+
+        public void setQuestMin(int newQuestMin)
+        {
+            questMin = newQuestMin;
+        }
+
+        public void setQuestMax(int newQuestMax)
+        {
+            questMax = newQuestMax;
+        }
+
+
 
     }
 
@@ -44,12 +64,15 @@ public class StoreJSON
     {
         List<MobSet> quests = new ArrayList<>();
 
-        public void AddSet(String mob, int questMean, int questSkew)
+        public void AddSet(String mob, int questMean, int questSkew, int questExp, int questMin, int questMax)
         {
             MobSet newSet = new MobSet();
             newSet.setMob(mob);
             newSet.setQuestMean(questMean);
             newSet.setQuestSkew(questSkew);
+            newSet.setQuestExp(questExp);
+            newSet.setQuestMin(questMin);
+            newSet.setQuestMax(questMax);
 
             quests.add(newSet);
         }
@@ -59,7 +82,7 @@ public class StoreJSON
     //Don't trust: Please run only AFTER JSONToConfig()
     public static List<QuestTier> ProcessJSON()
     {
-        List<QuestTier> tierListToReturn = List.of();
+        List<QuestTier> tierListToReturn = new ArrayList<>();
 
         List<String> currentTierQuests;
 
@@ -72,7 +95,7 @@ public class StoreJSON
 
         List<String> tiersList = new ArrayList<>(tiersJSON.keySet());
 
-        for(int i = 0; i <= tiersList.size(); i++)
+        for(int i = 0; i < tiersList.size(); i++)
         {
             QuestTier currentTier = new QuestTier();
 
@@ -80,13 +103,13 @@ public class StoreJSON
 
             currentTierQuests = new ArrayList<>(CurrentTierJson.keySet());
 
-            for(int j = 0; j <= currentTierQuests.size(); j++)
+            for(int j = 0; j < currentTierQuests.size(); j++)
             {
                 currentQuest = CurrentTierJson.getAsJsonObject(currentTierQuests.get(j));
 
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
-                    currentTier.AddSet(currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt());
+                    currentTier.AddSet(currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("questExp").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());
                 }
                 else
                 {

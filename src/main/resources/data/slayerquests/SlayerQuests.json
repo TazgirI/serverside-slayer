@@ -1,5 +1,5 @@
 {
-  "levels":
+  "tiers":
   {
     "1":
     {
@@ -7,13 +7,19 @@
       {
         "mobID": "minecraft:zombie",
         "questAverage": 10,
-        "questSkew": 5
+        "questSkew": 5,
+        "questMax": 15,
+        "questMin": 5,
+        "questExp": 50
       },
       "skeleton":
       {
         "mobID": "minecraft:skeleton",
         "questAverage" : 7,
-        "questSkew" : 2
+        "questSkew" : 2,
+        "questMax": 7,
+        "questMin": 5,
+        "questExp": 30
       }
     },
     "2":
@@ -22,13 +28,19 @@
       {
         "mobID": "minecraft:zombie",
         "questAverage": 20,
-        "questSkew": 8
+        "questSkew": 8,
+        "questMax": 28,
+        "questMin": 17,
+        "questExp": 100
       },
       "skeleton":
       {
         "mobID": "minecraft:skeleton",
         "questAverage" : 16,
-        "questSkew" : 4
+        "questSkew" : 4,
+        "questMax": 17,
+        "questMin": 12,
+        "questExp": 70
       }
     },
     "3":

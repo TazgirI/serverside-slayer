@@ -1,0 +1,65 @@
+{
+  "tiers": {
+    "You can rename the objects directly within tiers":
+    {
+
+      "Do not rename the variables nested WITHIN this object however":
+      {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 20,
+        "questSkew": 8,
+        "questMax": 15,
+        "questMin": 5,
+        "questExp": 50
+      },
+      "If the mobID doesn't exist, an error WILL be thrown":
+      {
+        "mobID": "madeup:trumpet",
+        "questAverage": 20,
+        "questSkew": 8,
+        "questMax": 7,
+        "questMin": 5,
+        "questExp": 30
+      }
+    },
+    "Take care as whatever is put as this object is returned as the plaintext for the tier in quest granting text":
+    {
+      "This is also returned as the 'questName' but isn't always used":
+      {
+        "mobID": "minecraft:zombie",
+        "questAverage": 20,
+        "questSkew": 8,
+        "questMax": 28,
+        "questMin": 17,
+        "questExp": 50
+      }
+    },
+    "You can have as many tiers of quest as you like, just depends on how your choice of quest giver handles it (any quest giver packaged with the base mod can handle any number of tiers)":
+    {
+      "You can also have as many quests as you like within a tier":
+      {
+        "mobID": "lookout:loadingTimesScaleWithAmountOfQuests (butBarely)",
+        "questAverage": 2000000,
+        "questSkew": 8,
+        "questMax": 2000000,
+        "questMin": 17,
+        "questExp": 50
+      },
+      "Having a too large skew may affect performance when generating quests (generation is performed via a bell curve with min and max bounds checks)":
+      {
+        "mobID": "thisIsAnExampleOfWhatNotToDo",
+        "questAverage": 10,
+        "questSkew": 80,
+        "questMax": 12,
+        "questMin": 2,
+        "questExp": 50
+      }
+    },
+    "Currently undefined behaviour includes (I say undefined; everything here will at least break the quest system, some may throw a RuntimeException":
+    {
+      "Tiers with no quests": {},
+      "Quests requesting amounts below zero": {},
+      "Quests missing the expected variables": {}
+    }
+  }
+}
