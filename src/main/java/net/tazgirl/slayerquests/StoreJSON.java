@@ -16,7 +16,7 @@ import java.util.List;
 public class StoreJSON
 {
 
-    public static class MobSet
+    public static class Quest
     {
         String mob;
         int questMean;
@@ -62,11 +62,11 @@ public class StoreJSON
 
     public static class QuestTier
     {
-        List<MobSet> quests = new ArrayList<>();
+        List<Quest> quests = new ArrayList<>();
 
         public void AddSet(String mob, int questMean, int questSkew, int questExp, int questMin, int questMax)
         {
-            MobSet newSet = new MobSet();
+            Quest newSet = new Quest();
             newSet.setMob(mob);
             newSet.setQuestMean(questMean);
             newSet.setQuestSkew(questSkew);
@@ -109,7 +109,7 @@ public class StoreJSON
 
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
-                    currentTier.AddSet(currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("questExp").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());
+                    currentTier.AddSet(currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());
                 }
                 else
                 {

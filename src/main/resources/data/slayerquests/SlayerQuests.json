@@ -10,7 +10,7 @@
         "questSkew": 5,
         "questMax": 15,
         "questMin": 5,
-        "questExp": 50
+        "slayerExpPerMob": 1
       },
       "skeleton":
       {
@@ -19,7 +19,7 @@
         "questSkew" : 2,
         "questMax": 7,
         "questMin": 5,
-        "questExp": 30
+        "slayerExpPerMob": 2
       }
     },
     "2":
@@ -31,7 +31,7 @@
         "questSkew": 8,
         "questMax": 28,
         "questMin": 17,
-        "questExp": 100
+        "slayerExpPerMob": 3
       },
       "skeleton":
       {
@@ -40,7 +40,7 @@
         "questSkew" : 4,
         "questMax": 17,
         "questMin": 12,
-        "questExp": 70
+        "slayerExpPerMob": 4
       }
     },
     "3":
