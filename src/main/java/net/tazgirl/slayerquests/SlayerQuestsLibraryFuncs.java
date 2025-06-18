@@ -7,15 +7,135 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class SlayerQuestsLibraryFuncs
 {
 
-    //================
-    //   Fetch Data
-    //================
+
+    //==================
+    //   Data Classes
+    //==================
+
+
+    public static class Quest
+    {
+        public String name;
+        public String mob;
+        public int mean;
+        public int skew;
+        public int expPerMob;
+        public int min;
+        public int max;
+
+        public int GenerateQuestCap()
+        {
+
+            int maxPasses = Config.bellCurveMaxPasses;
+
+            java.util.Random random = new java.util.Random();
+            double value;
+
+            for(int i = 0; i < maxPasses; i++)
+            {
+                value = mean + random.nextGaussian() * skew;
+                if(value > min || value < max)
+                {
+                    return Math.round((float) value);
+                }
+            }
+
+            return mean;
+        }
+    }
+
+    public static class Tier
+    {
+        static String name;
+        List<Quest> quests = new ArrayList<>();
+        List<String> validQuestNames;
+
+        public void AddSet(String questName, String questMob, int questMean, int questSkew, int questExp, int questMin, int questMax)
+        {
+            Quest newSet = new Quest();
+            newSet.name = questName;
+            newSet.mob = questMob;
+            newSet.mean = questMean;
+            newSet.skew = questSkew;
+            newSet.expPerMob = questExp;
+            newSet.min = questMin;
+            newSet.max = questMax;
+
+
+            quests.add(newSet);
+        }
+
+        protected void setName(String newName)
+        {
+            name = newName;
+        }
+
+        public void setQuestNames(List<String> newQuestNames)
+        {
+            validQuestNames = newQuestNames;
+        }
+
+        public List<String> QuestNamesInTier()
+        {
+            return validQuestNames;
+        }
+
+        public List<Quest> QuestObjectsInTier()
+        {
+            return quests;
+        }
+
+        public boolean RemoveQuest(String questName)
+        {
+            int questIndex = validQuestNames.indexOf(questName);
+
+            if(questIndex != -1 && quests.size() != 1)
+            {
+                quests.remove(questIndex);
+                validQuestNames.remove(questIndex);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public boolean RemoveQuest(Quest questToRemove)
+        {
+            if(quests.contains(questToRemove) && quests.size() != 1)
+            {
+                quests.remove(questToRemove);
+                validQuestNames.remove(questToRemove.name);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public String RandomQuestName()
+        {
+            return quests.get(new Random().nextInt(0,quests.size())).name;
+        }
+
+        public Quest RandomQuestObject()
+        {
+            return quests.get(new Random().nextInt(0,quests.size()));
+        }
+
+    }
+
+
+    //====================
+    //   Calculate Data
+    //====================
 
 
     public static int ExpToLevel(int exp)
@@ -32,6 +152,57 @@ public class SlayerQuestsLibraryFuncs
     {
         return LevelToExp(currentLevel + 1) - (exp - LevelToExp(currentLevel));
     }
+
+    // Use if you don't have a specific Quest object, if you do then use Quest.GenerateQuestCap()//
+    public static int GenerateQuestCap(int average, int skew, int min, int max)
+    {
+        int maxPasses = Config.bellCurveMaxPasses;
+
+        java.util.Random random = new java.util.Random();
+        double value;
+
+        for(int i = 0; i < maxPasses; i++)
+        {
+            value = average + random.nextGaussian() * skew;
+            if(value > min || value < max)
+            {
+                return Math.round((float) value);
+            }
+        }
+        return average;
+
+    }
+
+
+
+    //Don't use, separate functions
+    public String GrantQuest(Player player, int tier)
+    {
+        DataAttachment.CurrentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
+
+        if(playerQuest.mob() != null)
+        {
+            if (playerQuest.questCurrent() >= playerQuest.questCap())
+            {
+                DataAttachment.SlayerExperienceRecord playerExp = player.getData(DataAttachment.SLAYER_EXPERIENCE);
+                int newExp = playerExp.exp() + (playerQuest.slayerExpPerMob() * playerQuest.questCap());
+                player.setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.SlayerExperienceRecord(ExpToLevel(newExp),newExp));
+                return "fulfilled";
+            }
+
+            return "incomplete";
+        }
+        else
+        {
+
+            return "assigned";
+        }
+    }
+
+
+    //========================
+    //   Quest Manipulation
+    //========================
 
     public String GetQuestState(Player player)
     {
@@ -66,88 +237,94 @@ public class SlayerQuestsLibraryFuncs
         }
     }
 
-    //Don't use, seperate functions
-    public String GrantQuest(Player player, int tier)
+    public boolean RewardQuest(Player player, Boolean doRemoveQuest)
     {
         DataAttachment.CurrentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
 
-        if(playerQuest.mob() != null)
+        if (IsQuestComplete(playerQuest))
         {
-            if (playerQuest.questCurrent() >= playerQuest.questCap())
+            DataAttachment.SlayerExperienceRecord playerExp = player.getData(DataAttachment.SLAYER_EXPERIENCE);
+            int newExp = playerExp.exp() + (playerQuest.slayerExpPerMob() * playerQuest.questCap());
+            player.setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.SlayerExperienceRecord(ExpToLevel(newExp),newExp));
+
+            if(doRemoveQuest)
             {
-                DataAttachment.SlayerExperienceRecord playerExp = player.getData(DataAttachment.SLAYER_EXPERIENCE);
-                int newExp = playerExp.exp() + (playerQuest.slayerExpPerMob() * playerQuest.questCap());
-                player.setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.SlayerExperienceRecord(ExpToLevel(newExp),newExp));
-                return "fulfilled";
+                player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.CurrentQuestRecord(null,0,0,0,""));
             }
 
-            return "incomplete";
+            return true;
+        }
+
+        return false;
+    }
+
+    public void ForceRewardQuest(Player player, Boolean doRemoveQuest)
+    {
+        DataAttachment.CurrentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
+
+        DataAttachment.SlayerExperienceRecord playerExp = player.getData(DataAttachment.SLAYER_EXPERIENCE);
+        int newExp = playerExp.exp() + (playerQuest.slayerExpPerMob() * playerQuest.questCap());
+        player.setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.SlayerExperienceRecord(ExpToLevel(newExp),newExp));
+
+        if(doRemoveQuest)
+        {
+            player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.CurrentQuestRecord(null,0,0,0,""));
+        }
+    }
+
+    public void RemoveQuest(Player player, Boolean doCheckIfQuestCompleted)
+    {
+        if(doCheckIfQuestCompleted)
+        {
+            DataAttachment.CurrentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
+
+            if(IsQuestComplete(playerQuest))
+            {
+                player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.CurrentQuestRecord(null,0,0,0,""));
+            }
         }
         else
         {
-
-            return "assigned";
+            player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.CurrentQuestRecord(null,0,0,0,""));
         }
+
     }
 
-
-    //======================
-    //  Quest Manipulation
-    //======================
-
-
-    public static int GenerateQuestCap(int average, int skew, int min, int max)
+    public Boolean IsQuestComplete(DataAttachment.CurrentQuestRecord playerQuest)
     {
-        int maxPasses = Config.bellCurveMaxPasses;
-
-        java.util.Random random = new java.util.Random();
-        double value;
-
-        for(int i = 0; i < maxPasses; i++)
+        if(playerQuest.mob() != null && playerQuest.questCurrent() >= playerQuest.questCap())
         {
-            value = average + random.nextGaussian() * skew;
-            if(value > min || value < max)
-            {
-                return Math.round((float) value);
-            }
-        }
-        return average;
-
-    }
-
-    public static int GenerateQuestCap(StoreJSON.Quest quest)
-    {
-        int average = quest.mean;
-        int skew = quest.skew;
-        int min = quest.min;
-        int max = quest.max;
-
-        int maxPasses = Config.bellCurveMaxPasses;
-
-        java.util.Random random = new java.util.Random();
-        double value;
-
-        for(int i = 0; i < maxPasses; i++)
-        {
-            value = average + random.nextGaussian() * skew;
-            if(value > min || value < max)
-            {
-                return Math.round((float) value);
-            }
+            return true;
         }
 
-        return average;
+        return false;
     }
 
-    public String FetchQuestNameFromTier(String tier)
+    //==================
+    //   Fetch Random
+    //==================
+
+
+    public String RandomTierName()
     {
-        List<StoreJSON.QuestTier> tiersList = SlayerQuests.tiers;
+        return SlayerQuests.validTiers.get(new Random().nextInt(0,SlayerQuests.validTiers.size()));
+    }
+
+    public Tier RandomTierObject()
+    {
+        return SlayerQuests.tiers.get(new Random().nextInt(0,SlayerQuests.tiers.size()));
+    }
+
+    // Use if you don't have a specific Tier object, if you do then use Tier.RandomQuestName()
+    public String RandomQuestNameFromTier(String tier)
+    {
+        List<Tier> tiersList = SlayerQuests.tiers;
         List<String> validTiers = SlayerQuests.validTiers;
 
         if(validTiers.contains(tier))
         {
-            StoreJSON.QuestTier tierObject = tiersList.get(validTiers.indexOf(tier));
-            List<StoreJSON.Quest> questList = tierObject.quests;
+            Tier tierObject = tiersList.get(validTiers.indexOf(tier));
+            List<Quest> questList = tierObject.quests;
 
             Random random = new Random();
 
@@ -158,15 +335,16 @@ public class SlayerQuestsLibraryFuncs
 
     }
 
-    public StoreJSON.Quest FetchQuestObjectFromTier(String tier)
+    // Use if you don't have a specific Tier object, if you do then use Tier.RandomQuestObject()
+    public Quest RandomQuestObjectFromTier(String tier)
     {
-        List<StoreJSON.QuestTier> tiersList = SlayerQuests.tiers;
+        List<Tier> tiersList = SlayerQuests.tiers;
         List<String> validTiers = SlayerQuests.validTiers;
 
         if(validTiers.contains(tier))
         {
-            StoreJSON.QuestTier tierObject = tiersList.get(validTiers.indexOf(tier));
-            List<StoreJSON.Quest> questList = tierObject.quests;
+            Tier tierObject = tiersList.get(validTiers.indexOf(tier));
+            List<Quest> questList = tierObject.quests;
 
             return questList.get(new Random().nextInt(0,questList.size()));
         }
@@ -175,25 +353,48 @@ public class SlayerQuestsLibraryFuncs
 
     }
 
-    public String RandomTierName()
-    {
-        return SlayerQuests.validTiers.get(new Random().nextInt(0,SlayerQuests.validTiers.size()));
-    }
 
-    public StoreJSON.QuestTier RandomTierObject()
-    {
-        return SlayerQuests.tiers.get(new Random().nextInt(0,SlayerQuests.tiers.size()));
-    }
+    //=================
+    //   Fetch Lists
+    //=================
+
 
     public List<String> TierNamesList()
     {
         return SlayerQuests.validTiers;
     }
 
-    public List<StoreJSON.QuestTier> TierObjectsList()
+    public List<Tier> TierObjectsList()
     {
         return SlayerQuests.tiers;
     }
+
+    // Use if you don't have a specific Tier object, if you do then use Tier.QuestNamesInTier()
+    public List<String> QuestNamesInTier(String tierName)
+    {
+        int tierIndex = SlayerQuests.validTiers.indexOf(tierName);
+
+        if(tierIndex != -1)
+        {
+            return SlayerQuests.tiers.get(tierIndex).validQuestNames;
+        }
+
+        return new ArrayList<>();
+    }
+
+    // Use if you don't have a specific Tier object, if you do then use Tier.QuestObjectsInTier()
+    public List<Quest> QuestObjectsInTier(String tier)
+    {
+        int tierIndex = SlayerQuests.validTiers.indexOf(tier);
+
+        if(tierIndex != -1)
+        {
+            return SlayerQuests.tiers.get(tierIndex).quests;
+        }
+
+        return new ArrayList<>();
+    }
+
 
     //=======================
     //   File Manipulation

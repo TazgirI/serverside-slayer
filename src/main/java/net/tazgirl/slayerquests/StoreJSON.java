@@ -5,13 +5,11 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,59 +20,18 @@ import static com.google.common.io.Resources.getResource;
 public class StoreJSON
 {
 
-    public static class Quest
-    {
-        public String name;
-        public String mob;
-        public int mean;
-        public int skew;
-        public int expPerMob;
-        public int min;
-        public int max;
-
-    }
-
-    public static class QuestTier
-    {
-        static String name;
-        List<Quest> quests = new ArrayList<>();
-        List<String> validQuestNames;
-
-        public void AddSet(String questName, String questMob, int questMean, int questSkew, int questExp, int questMin, int questMax)
-        {
-            Quest newSet = new Quest();
-            newSet.name = questName;
-            newSet.mob = questMob;
-            newSet.mean = questMean;
-            newSet.skew = questSkew;
-            newSet.expPerMob = questExp;
-            newSet.min = questMin;
-            newSet.max = questMax;
 
 
-            quests.add(newSet);
-        }
 
-        public void setName(String newName)
-        {
-            name = newName;
-        }
-
-        public void setQuestNames(List<String> newQuestNames)
-        {
-            validQuestNames = newQuestNames;
-        }
-
-    }
 
 
 
     //Bad vibes: Please run only AFTER JSONToConfig()
-    public static List<QuestTier> ProcessJSON()
+    public static List<SlayerQuestsLibraryFuncs.Tier> ProcessJSON()
     {
 
 
-        List<QuestTier> tierListToReturn = new ArrayList<>();
+        List<SlayerQuestsLibraryFuncs.Tier> tierListToReturn = new ArrayList<>();
 
         List<String> currentTierQuests;
 
@@ -91,7 +48,7 @@ public class StoreJSON
 
         for(int i = 0; i < tiersList.size(); i++)
         {
-            QuestTier currentTier = new QuestTier();
+            SlayerQuestsLibraryFuncs.Tier currentTier = new SlayerQuestsLibraryFuncs.Tier();
 
             currentTier.setName(tiersList.get(i));
 
