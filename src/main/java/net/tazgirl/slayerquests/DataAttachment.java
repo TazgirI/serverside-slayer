@@ -30,12 +30,17 @@ public class DataAttachment
             ).apply(instance, SlayerExperienceRecord::new)
     );
 
+    public static final Codec<QuestToGiveRecord> QUEST_TO_GIVE_CODEC = RecordCodecBuilder.create(instance ->
+            instance.group
+                    (Codec.STRING.fieldOf("questName").forGetter(QuestToGiveRecord::questName)).apply(instance, QuestToGiveRecord::new));
+
     public static final Supplier<AttachmentType<CurrentQuestRecord>> CURRENT_QUEST = ATTACHMENT_TYPES.register("current_quest",() -> AttachmentType.builder(() -> new CurrentQuestRecord(null,0,0,0,"")).serialize(CURRENT_QUEST_CODEC).copyOnDeath().build());
     public static final Supplier<AttachmentType<SlayerExperienceRecord>> SLAYER_EXPERIENCE = ATTACHMENT_TYPES.register("slayer_experience",() -> AttachmentType.builder(() -> new SlayerExperienceRecord(0,0)).serialize(SLAYER_EXPERIENCE_CODEC).copyOnDeath().build());
-
+    public static final Supplier<AttachmentType<QuestToGiveRecord>> QUEST_TO_GIVE = ATTACHMENT_TYPES.register("quest_to_give",() -> AttachmentType.builder(() -> new QuestToGiveRecord(null)).serialize(QUEST_TO_GIVE_CODEC).build());
 
     public record CurrentQuestRecord(String mob, int questCurrent, int questCap, int slayerExpPerMob, String questName){}
     public record SlayerExperienceRecord(int exp, int level){}
+    public record QuestToGiveRecord(String questName){}
 
 
 

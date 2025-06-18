@@ -221,7 +221,7 @@ public class SlayerQuestsLibraryFuncs
         }
     }
 
-    public String GetQuestState(DataAttachment.CurrentQuestRecord playerQuest)
+    public static String GetQuestState(DataAttachment.CurrentQuestRecord playerQuest)
     {
         if(playerQuest.mob() != null)
         {
