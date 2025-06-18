@@ -1,7 +1,10 @@
 package net.tazgirl.slayerquests;
 
+import net.minecraft.client.telemetry.events.WorldLoadEvent;
+import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -49,16 +52,17 @@ public class SlayerQuests
     // Define mod id in a common place for everything to reference
     public static final String MODID = "slayerquests";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
 
-    public static List<StoreJSON.QuestTier> tiers;
+    static List<StoreJSON.QuestTier> tiers;
+    static List<String> validTiers;
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public SlayerQuests(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
-        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::Setup);
 
         DataAttachment.register(modEventBus);
 
@@ -71,10 +75,20 @@ public class SlayerQuests
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void setup(FMLCommonSetupEvent event)
+    private void Setup(FMLCommonSetupEvent event)
     {
-        JSONToConfig();
+        if(Config.copyOverJSON)
+        {
+            JSONToConfig();
+        }
         tiers = StoreJSON.ProcessJSON();
+        validTiers = StoreJSON.ValidTierNames();
+
+    }
+
+    private void WorldLoad(ServerStartedEvent event)
+    {
+
     }
 
 
@@ -83,11 +97,13 @@ public class SlayerQuests
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+        if(Config.validateLootTables)
+        {
+            StoreJSON.ValidateTierLoot(validTiers, event.getServer());
+        }
     }
 
-    public void JSONToConfig()
+    private void JSONToConfig()
     {
         Path configDir = FMLPaths.CONFIGDIR.get();
         Path targetFile = configDir.resolve("SlayerQuests.json");

@@ -54,10 +54,10 @@
         "slayerExpPerMob": 50
       }
     },
-    "Currently undefined behaviour includes (I say undefined; everything here will at least break the quest system, some may throw a RuntimeException":
+    "Currently undefined behaviour includes (I say undefined; everything here will at least break the quest system, some will throw a RuntimeException)":
     {
       "Tiers with no quests": {},
-      "Quests requesting amounts below zero": {},
+      "Quests setting amounts below zero": {},
       "Quests missing the expected variables": {}
     }
   }

@@ -3,7 +3,7 @@
   {
     "1":
     {
-      "zombie":
+      "Thin the herd":
       {
         "mobID": "minecraft:zombie",
         "questAverage": 10,
@@ -12,7 +12,7 @@
         "questMin": 5,
         "slayerExpPerMob": 1
       },
-      "skeleton":
+      "Rattle their bones":
       {
         "mobID": "minecraft:skeleton",
         "questAverage" : 7,
@@ -24,7 +24,7 @@
     },
     "2":
     {
-      "zombie":
+      "Decimate the herd":
       {
         "mobID": "minecraft:zombie",
         "questAverage": 20,
@@ -33,7 +33,7 @@
         "questMin": 17,
         "slayerExpPerMob": 3
       },
-      "skeleton":
+      "Grind their bones":
       {
         "mobID": "minecraft:skeleton",
         "questAverage" : 16,
@@ -45,7 +45,15 @@
     },
     "3":
     {
-
+      "Grind their bones":
+      {
+        "mobID": "minecraft:skeleton",
+        "questAverage" : 16,
+        "questSkew" : 4,
+        "questMax": 17,
+        "questMin": 12,
+        "slayerExpPerMob": 4
+      }
     }
   }
 }
