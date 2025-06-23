@@ -50,13 +50,13 @@ public class StoreJSON
         {
             SlayerQuestsLibraryFuncs.Tier currentTier = new SlayerQuestsLibraryFuncs.Tier();
 
-            currentTier.setName(tiersList.get(i));
+            currentTier.DoSetName(tiersList.get(i));
 
             CurrentTierJson = tiersJSON.getAsJsonObject(tiersList.get(i));
 
             currentTierQuests = new ArrayList<>(CurrentTierJson.keySet());
 
-            currentTier.setQuestNames(currentTierQuests);
+            currentTier.DoSetQuestNames(currentTierQuests);
 
             for(int j = 0; j < currentTierQuests.size(); j++)
             {
@@ -64,7 +64,7 @@ public class StoreJSON
 
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
-                    currentTier.AddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());
+                    currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());
                 }
                 else
                 {

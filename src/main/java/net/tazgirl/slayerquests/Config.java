@@ -24,7 +24,7 @@ public class Config
     private static final ModConfigSpec.BooleanValue COPY_OVER_JSON = BUILDER.comment("Do copy the SlayerQuests.json to the config dir if none exists already").define("copyOverJSON",true);
     private static final ModConfigSpec.BooleanValue VALIDATE_LOOT_TABLES = BUILDER.comment("Do validate loot table exists for each tier and throw error if not (DANGER: Do not touch unless using an addon that explicitly handles/requires this, will almost definitely cause a crash if you are not)").define("validateLootTables",true);
 
-
+    
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
