@@ -54,7 +54,7 @@ public class SlayerQuestsLibraryFuncs
 
     public static class Tier
     {
-        static String name;
+        public String name;
         List<Quest> quests = new ArrayList<>();
         List<String> validQuestNames;
 
@@ -233,6 +233,10 @@ public class SlayerQuestsLibraryFuncs
     //   Calculate Data
     //====================
 
+    public static int GetPlayerLevel(Player player)
+    {
+        return player.getData(DataAttachment.SLAYER_EXPERIENCE).level();
+    }
 
     public static int CalcExpToLevel(int exp)
     {
@@ -304,9 +308,9 @@ public class SlayerQuestsLibraryFuncs
             return entity.getData(DataAttachment.QUEST_TO_GIVE).questName();
         }
 
-        public static void DoSetStoredQuest(LivingEntity entity, String questNameToStore)
+        public static void DoSetStoredQuest(LivingEntity entity, String tierNameToStore, String questNameToStore)
         {
-            entity.setData(DataAttachment.QUEST_TO_GIVE.get(), new DataAttachment.questToGiveRecord(questNameToStore));
+            entity.setData(DataAttachment.QUEST_TO_GIVE.get(), new DataAttachment.questToGiveRecord(tierNameToStore, questNameToStore));
         }
 
         public int GetSlayerLevel(Player player)

@@ -1,5 +1,9 @@
 package net.tazgirl.slayerquests;
 
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.neoforged.fml.ModLoadingException;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
@@ -73,6 +77,7 @@ public class SlayerQuests
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
+
         if(Config.validateLootTables)
         {
             StoreJSON.ValidateTierLoot(validTiers, event.getServer());
@@ -95,13 +100,17 @@ public class SlayerQuests
                 else
                 {
                     LOGGER.error("No SlayerQuests.json could be found");
+
                     throw new RuntimeException("Missing SlayerQuests.json in '/data/slayerquests/SlayerQuests.json' or config directory");
+
                 }
 
             }
             catch (IOException error) {
                 LOGGER.error("SlayerQuests.json generation failed", error);
-                throw new RuntimeException("Could not generate SlayerQuests.json", error);
+                throw new RuntimeException("SlayerQuests.json generation failed", error);
+
+
             }
         }
 

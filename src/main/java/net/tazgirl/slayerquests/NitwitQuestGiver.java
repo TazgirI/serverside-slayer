@@ -7,7 +7,9 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class NitwitQuestGiver
 {
@@ -22,36 +24,64 @@ public class NitwitQuestGiver
             switch(SlayerQuestsLibraryFuncs.GetQuestState(currentQuest))
             {
                 case "unfulfilled":
+
                     return;
                 case "fulfilled":
 
                     event.setCanceled(true);
                     break;
                 case "unassigned":
+
                     if(SlayerQuestsLibraryFuncs.GetStoredQuest(villager) == null)
                     {
-                        SlayerQuestsLibraryFuncs.DoSetStoredQuest(villager, SlayerQuestsLibraryFuncs.GetRandomQuestNameFromTier());
+                        List<SlayerQuestsLibraryFuncs.Tier> possibleTiers = CalculcatePossibleTiers(player);
+                        SlayerQuestsLibraryFuncs.Tier tierToGive = possibleTiers.get(new Random().nextInt(0,possibleTiers.size()));
+
+                        SlayerQuestsLibraryFuncs.Quest questToGive = tierToGive.GetRandomQuestObject();
+
+                        SlayerQuestsLibraryFuncs.DoSetStoredQuest(villager, tierToGive.name, questToGive.name);
                     }
 
                     event.setCanceled(true);
                     break;
-
-
             }
-
-
         }
     }
 
-    private int CalulcatePossibleTiers(Player player)
+    private List<SlayerQuestsLibraryFuncs.Tier> CalculcatePossibleTiers(Player player)
     {
+        int playerSlayerlevel = SlayerQuestsLibraryFuncs.GetPlayerLevel(player);
+        List<Integer> thresholds = Config.tierLevelThresholds;
         List<SlayerQuestsLibraryFuncs.Tier> tiers = SlayerQuestsLibraryFuncs.GetTierObjectsList();
+        List<SlayerQuestsLibraryFuncs.Tier> tiersToReturn = new ArrayList<>();
 
-        for(int i = 0; i > tiers.size(); i++)
+        for(int i = 0; i < tiers.size(); i++)
         {
-
+            if (thresholds.size() - i >= 1)
+            {
+                if(playerSlayerlevel >= thresholds.get(i))
+                {
+                    tiersToReturn.add(tiers.get(i));
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                if(playerSlayerlevel >= thresholds.getLast())
+                {
+                    tiersToReturn.add(tiers.get(i));
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
 
+        return tiersToReturn;
     }
 
 }

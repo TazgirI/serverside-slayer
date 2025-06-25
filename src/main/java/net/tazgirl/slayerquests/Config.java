@@ -1,36 +1,57 @@
 package net.tazgirl.slayerquests;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Neo's config APIs
 @EventBusSubscriber(modid = SlayerQuests.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config
 {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-
-    private static final ModConfigSpec.IntValue BELL_CURVE_MAX_PASSES = BUILDER.comment("How many times the bell curve attempts to be within the min/max for a given quest before just returning the average").defineInRange("bellCurveMaxPasses", 10, 1, Integer.MAX_VALUE);
-
-    private static final ModConfigSpec.BooleanValue COPY_OVER_JSON = BUILDER.comment("Do copy the SlayerQuests.json to the config dir if none exists already").define("copyOverJSON",true);
-    private static final ModConfigSpec.BooleanValue VALIDATE_LOOT_TABLES = BUILDER.comment("Do validate loot table exists for each tier and throw error if not (DANGER: Do not touch unless using an addon that explicitly handles/requires this, will almost definitely cause a crash if you are not)").define("validateLootTables",true);
-
-    
-
-    static final ModConfigSpec SPEC = BUILDER.build();
+    static final ModConfigSpec SPEC = getBuilder().build();
 
     public static int bellCurveMaxPasses;
     public static boolean copyOverJSON;
     public static boolean validateLootTables;
+
+    public static boolean enableNitwitQuests;
+    public static List<Integer> tierLevelThresholds;
+
+    static ModConfigSpec.IntValue BELL_CURVE_MAX_PASSES;
+
+    static ModConfigSpec.BooleanValue COPY_OVER_JSON;
+    static ModConfigSpec.BooleanValue VALIDATE_LOOT_TABLES;
+    static ModConfigSpec.BooleanValue ENABLE_NITWIT_QUESTS;
+    static ModConfigSpec.ConfigValue<List<? extends Integer>> TIER_LEVEL_THRESHOLDS;
+
+    static ModConfigSpec.Builder getBuilder()
+    {
+        final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+
+        builder.push("general");
+
+        BELL_CURVE_MAX_PASSES = builder.comment("How many times the bell curve attempts to be within the min/max for a given quest before just returning the average").defineInRange("bellCurveMaxPasses", 10, 1, Integer.MAX_VALUE);
+        COPY_OVER_JSON = builder.comment("Do copy the SlayerQuests.json to the config dir if none exists already").define("copyOverJSON", true);
+        VALIDATE_LOOT_TABLES = builder.comment("Do validate loot table exists for each tier and throw error if not (DANGER: Do not touch unless using an addon that explicitly handles/requires this, will almost definitely cause a crash if you are not)").define("validateLootTables", true);
+
+        builder.pop();
+
+        builder.push("nitwit quest giver specific");
+
+        ENABLE_NITWIT_QUESTS = builder.comment("Enable nitwits to assign players slayer quests").define("enableNitwitQuests", true);
+        TIER_LEVEL_THRESHOLDS = builder.comment("The required slayer level for players to unlock each tier of quests (if there arent enough items in this list to completely map all tiers, every unassigned tier will be given the rightmost threshold)").define("tierLevelThresholds", List.of(1, 4, 10, 25, 50, 75));
+        builder.pop();
+
+        return builder;
+    }
+
+
+
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
@@ -38,5 +59,8 @@ public class Config
         bellCurveMaxPasses = BELL_CURVE_MAX_PASSES.get();
         copyOverJSON = COPY_OVER_JSON.get();
         validateLootTables = VALIDATE_LOOT_TABLES.get();
+
+        enableNitwitQuests = ENABLE_NITWIT_QUESTS.get();
+        tierLevelThresholds = TIER_LEVEL_THRESHOLDS.get().stream().collect(Collectors.toUnmodifiableList());
     }
 }

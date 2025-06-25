@@ -3,9 +3,13 @@ package net.tazgirl.slayerquests;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModLoadingException;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -19,13 +23,6 @@ import static com.google.common.io.Resources.getResource;
 
 public class StoreJSON
 {
-
-
-
-
-
-
-
     //Bad vibes: Please run only AFTER JSONToConfig()
     public static List<SlayerQuestsLibraryFuncs.Tier> ProcessJSON()
     {
@@ -70,8 +67,6 @@ public class StoreJSON
                 {
                     throw new RuntimeException(currentQuest.get("mobID").getAsString() + " is not a registered entity");
                 }
-
-
             }
             tierListToReturn.add(currentTier);
         }
@@ -97,7 +92,7 @@ public class StoreJSON
 
         for(String tierName : tierNames)
         {
-            currentDirectory = ResourceLocation.parse("slayerquests:tier_loot/" + tierName);
+            currentDirectory = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tierName + ".json");
 
             if(resourceManager.getResource(currentDirectory).isEmpty())
             {
@@ -107,9 +102,8 @@ public class StoreJSON
 
         if(!missingTables.isEmpty())
         {
-            String returnString = "Could not find a loot_table for the following tiers in SlayerQuest.json:" + missingTables;
-            SlayerQuests.LOGGER.error(returnString);
-            throw new RuntimeException(returnString);
+            SlayerQuests.LOGGER.error("Could not find a loot_table for the following tiers in SlayerQuest.json:" + missingTables);
+            throw new RuntimeException("Could not find a loot_table for the following tiers in SlayerQuest.json:" + missingTables);
         }
 
     }
