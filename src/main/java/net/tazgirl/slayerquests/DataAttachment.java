@@ -30,19 +30,25 @@ public class DataAttachment
             ).apply(instance, slayerExperienceRecord::new)
     );
 
-    public static final Codec<questToGiveRecord> QUEST_TO_GIVE_CODEC = RecordCodecBuilder.create(instance ->
+    public static final Codec<questHolderRecord> QUEST_HOLDER_CODEC = RecordCodecBuilder.create(instance ->
             instance.group
-                    (Codec.STRING.fieldOf("tierName").forGetter(questToGiveRecord::tierName),
-                    Codec.STRING.fieldOf("questName").forGetter(questToGiveRecord::questName
-                    )).apply(instance, questToGiveRecord::new));
+                    (Codec.STRING.fieldOf("tierName").forGetter(questHolderRecord::tierName),
+                    Codec.STRING.fieldOf("questName").forGetter(questHolderRecord::questName),
+                    Codec.LONG.fieldOf("timeWhenStored").forGetter(questHolderRecord::timeWhenStored)
+                    ).apply(instance, questHolderRecord::new));
 
-    public static final Supplier<AttachmentType<currentQuestRecord>> CURRENT_QUEST = ATTACHMENT_TYPES.register("current_quest",() -> AttachmentType.builder(() -> new currentQuestRecord(null,0,0,0,"")).serialize(CURRENT_QUEST_CODEC).copyOnDeath().build());
+    public static final Codec<mobBonusRecord> MOB_BONUS_CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.INT.fieldOf("mobBonus").forGetter(mobBonusRecord::bonusAmount)).apply(instance, mobBonusRecord::new));
+
+    public static final Supplier<AttachmentType<currentQuestRecord>> CURRENT_QUEST = ATTACHMENT_TYPES.register("current_quest",() -> AttachmentType.builder(() -> new currentQuestRecord("",0,0,0,"")).serialize(CURRENT_QUEST_CODEC).copyOnDeath().build());
     public static final Supplier<AttachmentType<slayerExperienceRecord>> SLAYER_EXPERIENCE = ATTACHMENT_TYPES.register("slayer_experience",() -> AttachmentType.builder(() -> new slayerExperienceRecord(0,0)).serialize(SLAYER_EXPERIENCE_CODEC).copyOnDeath().build());
-    public static final Supplier<AttachmentType<questToGiveRecord>> QUEST_TO_GIVE = ATTACHMENT_TYPES.register("quest_to_give",() -> AttachmentType.builder(() -> new questToGiveRecord(null,null)).serialize(QUEST_TO_GIVE_CODEC).build());
+    public static final Supplier<AttachmentType<questHolderRecord>> QUEST_HOLDER = ATTACHMENT_TYPES.register("quest_to_give",() -> AttachmentType.builder(() -> new questHolderRecord("","",null)).serialize(QUEST_HOLDER_CODEC).build());
+    public static final Supplier<AttachmentType<mobBonusRecord>> MOB_BONUS = ATTACHMENT_TYPES.register("mob_bonus",() -> AttachmentType.builder(() -> new mobBonusRecord(0)).serialize(MOB_BONUS_CODEC).build());
 
     public record currentQuestRecord(String mob, int questCurrent, int questCap, int slayerExpPerMob, String questName){}
     public record slayerExperienceRecord(int exp, int level){}
-    public record questToGiveRecord(String tierName, String questName){}
+    public record questHolderRecord(String tierName, String questName, Long timeWhenStored){}
+    public record mobBonusRecord(int bonusAmount){}
+
 
 
 

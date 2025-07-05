@@ -21,6 +21,7 @@ public class Config
 
     public static boolean enableNitwitQuests;
     public static List<Integer> tierLevelThresholds;
+    public static int questTimeoutTicks;
 
     static ModConfigSpec.IntValue BELL_CURVE_MAX_PASSES;
 
@@ -28,6 +29,7 @@ public class Config
     static ModConfigSpec.BooleanValue VALIDATE_LOOT_TABLES;
     static ModConfigSpec.BooleanValue ENABLE_NITWIT_QUESTS;
     static ModConfigSpec.ConfigValue<List<? extends Integer>> TIER_LEVEL_THRESHOLDS;
+    static ModConfigSpec.IntValue QUEST_TIMEOUT_TICKS;
 
     static ModConfigSpec.Builder getBuilder()
     {
@@ -44,7 +46,8 @@ public class Config
         builder.push("nitwit quest giver specific");
 
         ENABLE_NITWIT_QUESTS = builder.comment("Enable nitwits to assign players slayer quests").define("enableNitwitQuests", true);
-        TIER_LEVEL_THRESHOLDS = builder.comment("The required slayer level for players to unlock each tier of quests (if there arent enough items in this list to completely map all tiers, every unassigned tier will be given the rightmost threshold)").define("tierLevelThresholds", List.of(1, 4, 10, 25, 50, 75));
+        TIER_LEVEL_THRESHOLDS = builder.comment("The required slayer level for players to unlock each tier of quests, for performance reasons your tiers must be organised from lowest to highest threshold or the algorithm will not work as intended (if there arent enough items in this list to completely map all tiers, every unassigned tier will be given the rightmost threshold)").define("tierLevelThresholds", List.of(0, 4, 10, 25, 50, 75));
+        QUEST_TIMEOUT_TICKS = builder.comment("How many ticks you have to accept a quest when receiving an offer").defineInRange("questTimeoutTicks", 600, 1, Integer.MAX_VALUE);
         builder.pop();
 
         return builder;
@@ -62,5 +65,6 @@ public class Config
 
         enableNitwitQuests = ENABLE_NITWIT_QUESTS.get();
         tierLevelThresholds = TIER_LEVEL_THRESHOLDS.get().stream().collect(Collectors.toUnmodifiableList());
+        questTimeoutTicks = QUEST_TIMEOUT_TICKS.get();
     }
 }

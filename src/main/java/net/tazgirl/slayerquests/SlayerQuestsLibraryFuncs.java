@@ -33,7 +33,6 @@ public class SlayerQuestsLibraryFuncs
 
         public int CalcQuestCap()
         {
-
             int maxPasses = Config.bellCurveMaxPasses;
 
             java.util.Random random = new java.util.Random();
@@ -49,6 +48,11 @@ public class SlayerQuestsLibraryFuncs
             }
 
             return mean;
+        }
+
+        public void GrantToPlayer(Player player)
+        {
+            DoSetPlayerQuest(player, this);
         }
     }
 
@@ -138,10 +142,23 @@ public class SlayerQuestsLibraryFuncs
     //   Quest Manipulation
     //========================
 
+    public static void DoSetPlayerQuest(Player player, Quest quest)
+    {
+        player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord(quest.mob, 0, quest.CalcQuestCap(), quest.expPerMob, quest.name));
+    }
+
+    //TODO: Will throw error if either name does not exist
+    public static void DoSetPlayerQuest(Player player, String tierName, String questName)
+    {
+        Tier tier = SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName));
+        Quest quest = tier.GetQuestObjectsInTier().get(tier.GetQuestNamesInTier().indexOf(questName));
+        player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord(quest.mob, 0, quest.CalcQuestCap(), quest.expPerMob, quest.name));
+    }
+
     public static String GetQuestState(Player player)
     {
         DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
-        if(playerQuest.mob() != null)
+        if(playerQuest.mob() != "")
         {
             if(playerQuest.questCurrent()>= playerQuest.questCap())
             {
@@ -157,7 +174,7 @@ public class SlayerQuestsLibraryFuncs
 
     public static String GetQuestState(DataAttachment.currentQuestRecord playerQuest)
     {
-        if(playerQuest.mob() != null)
+        if(playerQuest.mob() != "")
         {
             if(playerQuest.questCurrent()>= playerQuest.questCap())
             {
@@ -183,7 +200,7 @@ public class SlayerQuestsLibraryFuncs
 
             if(doRemoveQuest)
             {
-                player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord(null,0,0,0,""));
+               DoRemoveQuest(player, false);
             }
 
             return true;
@@ -202,7 +219,7 @@ public class SlayerQuestsLibraryFuncs
 
         if(doRemoveQuest)
         {
-            player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord(null,0,0,0,""));
+            player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord("",0,0,0,""));
         }
     }
 
@@ -210,23 +227,21 @@ public class SlayerQuestsLibraryFuncs
     {
         if(doCheckIfQuestCompleted)
         {
-            DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
-
-            if(GetIsQuestComplete(playerQuest))
+            if(GetIsQuestComplete(player.getData(DataAttachment.CURRENT_QUEST)))
             {
-                player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord(null,0,0,0,""));
+                player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord("",0,0,0,""));
             }
         }
         else
         {
-            player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord(null,0,0,0,""));
+            player.setData(DataAttachment.CURRENT_QUEST, new DataAttachment.currentQuestRecord("",0,0,0,""));
         }
 
     }
 
     public static Boolean GetIsQuestComplete(DataAttachment.currentQuestRecord playerQuest)
     {
-        return playerQuest.mob() != null && playerQuest.questCurrent() >= playerQuest.questCap();
+        return playerQuest.mob() != "" && playerQuest.questCurrent() >= playerQuest.questCap();
     }
 
     //====================
@@ -280,7 +295,7 @@ public class SlayerQuestsLibraryFuncs
     {
         DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
 
-        if(playerQuest.mob() != null)
+        if(playerQuest.mob() != "")
         {
             if (playerQuest.questCurrent() >= playerQuest.questCap())
             {
@@ -303,19 +318,53 @@ public class SlayerQuestsLibraryFuncs
     //   Manage Data
     //=================
 
-        public static String GetStoredQuest(LivingEntity entity)
+        public static DataAttachment.questHolderRecord GetStoredQuestHolderAsRecord(LivingEntity entity)
         {
-            return entity.getData(DataAttachment.QUEST_TO_GIVE).questName();
+            return entity.getData(DataAttachment.QUEST_HOLDER);
         }
 
-        public static void DoSetStoredQuest(LivingEntity entity, String tierNameToStore, String questNameToStore)
+        public static Quest GetStoredQuestHolderAsObject(LivingEntity entity)
         {
-            entity.setData(DataAttachment.QUEST_TO_GIVE.get(), new DataAttachment.questToGiveRecord(tierNameToStore, questNameToStore));
+            DataAttachment.questHolderRecord qtgRecord = entity.getData(DataAttachment.QUEST_HOLDER);
+            Tier tier = SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(qtgRecord.tierName()));
+
+            return tier.GetQuestObjectsInTier().get(tier.GetQuestNamesInTier().indexOf(qtgRecord.questName()));
+        }
+
+        public static void DoRefreshStoredQuestHolderTime(LivingEntity entity)
+        {
+            DataAttachment.questHolderRecord qtrRecord = entity.getData(DataAttachment.QUEST_HOLDER);
+            DoSetStoredQuest(entity, qtrRecord.tierName(), qtrRecord.questName(), entity.level().getGameTime());
+        }
+
+        public static void DoClearStoredQuestHolder(LivingEntity entity)
+        {
+            entity.setData(DataAttachment.QUEST_HOLDER.get(), new DataAttachment.questHolderRecord("","", null));
+        }
+
+        public static void DoSetStoredQuest(LivingEntity entity, String tierNameToStore, String questNameToStore, Long timeWhenStored)
+        {
+            entity.setData(DataAttachment.QUEST_HOLDER.get(), new DataAttachment.questHolderRecord(tierNameToStore, questNameToStore, timeWhenStored));
         }
 
         public int GetSlayerLevel(Player player)
         {
             return player.getData(DataAttachment.SLAYER_EXPERIENCE).level();
+        }
+
+        public static void DoSetMobBonus(LivingEntity entity, int bonus)
+        {
+            entity.setData(DataAttachment.MOB_BONUS.get(), new DataAttachment.mobBonusRecord(bonus));
+        }
+
+        public static int GetMobBonus(LivingEntity enity)
+        {
+            return enity.getData(DataAttachment.MOB_BONUS.get()).bonusAmount();
+        }
+
+        public static Tier GetTierObjectFromName(String tierName)
+        {
+            return SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName));
         }
 
     //==================
@@ -349,7 +398,7 @@ public class SlayerQuestsLibraryFuncs
             return questList.get(random.nextInt(0,questList.size())).name;
         }
 
-        return null;
+        return "";
 
     }
 

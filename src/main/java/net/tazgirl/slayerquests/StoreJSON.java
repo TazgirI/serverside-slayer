@@ -65,7 +65,7 @@ public class StoreJSON
                 }
                 else
                 {
-                    throw new RuntimeException(currentQuest.get("mobID").getAsString() + " is not a registered entity");
+                    throw new RuntimeException(currentQuest.get("mobID").getAsString() + " is not a registered LivingEntity");
                 }
             }
             tierListToReturn.add(currentTier);
