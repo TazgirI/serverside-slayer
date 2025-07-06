@@ -19,6 +19,7 @@ public class Config
     public static boolean copyOverJSON;
     public static boolean validateLootTables;
 
+
     public static boolean enableNitwitQuests;
     public static List<Integer> tierLevelThresholds;
     public static int questTimeoutTicks;

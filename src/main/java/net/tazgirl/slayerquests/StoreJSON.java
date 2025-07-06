@@ -59,6 +59,8 @@ public class StoreJSON
             {
                 currentQuest = CurrentTierJson.getAsJsonObject(currentTierQuests.get(j));
 
+                System.out.println(currentQuest.get("mobID"));
+
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
                     currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());

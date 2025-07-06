@@ -1,10 +1,16 @@
 package net.tazgirl.slayerquests;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
@@ -57,7 +63,7 @@ public class SlayerQuests
 
     private void Setup(FMLCommonSetupEvent event)
     {
-        if(Config.copyOverJSON)
+        if (Config.copyOverJSON)
         {
             JSONToConfig();
         }
@@ -66,19 +72,12 @@ public class SlayerQuests
 
     }
 
-    private void WorldLoad(ServerStartedEvent event)
-    {
-
-    }
-
-
-
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
 
-        if(Config.validateLootTables)
+        if (Config.validateLootTables)
         {
             StoreJSON.ValidateTierLoot(validTiers, event.getServer());
         }
@@ -93,11 +92,10 @@ public class SlayerQuests
         {
             try (InputStream in = SlayerQuests.class.getResourceAsStream("/data/slayerquests/SlayerQuests.json"))
             {
-                if(in != null)
+                if (in != null)
                 {
                     Files.copy(in, targetFile);
-                }
-                else
+                } else
                 {
                     LOGGER.error("No SlayerQuests.json could be found");
 
@@ -105,8 +103,8 @@ public class SlayerQuests
 
                 }
 
-            }
-            catch (IOException error) {
+            } catch (IOException error)
+            {
                 LOGGER.error("SlayerQuests.json generation failed", error);
                 throw new RuntimeException("SlayerQuests.json generation failed", error);
 
@@ -117,3 +115,5 @@ public class SlayerQuests
     }
 
 }
+
+

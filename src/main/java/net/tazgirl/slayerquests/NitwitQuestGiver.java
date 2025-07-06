@@ -1,10 +1,17 @@
 package net.tazgirl.slayerquests;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
@@ -27,12 +34,12 @@ public class NitwitQuestGiver
     @SubscribeEvent
     public static void NitwitInteracted(PlayerInteractEvent.EntityInteractSpecific event)
     {
-        if(event.getTarget() instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT)
+        if(event.getTarget() instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT && !event.getLevel().isClientSide)
         {
             System.out.println(villager.getVillagerData().getProfession());
 
             Player player = event.getEntity();
-            DataAttachment.currentQuestRecord currentQuest = player.getData(DataAttachment.CURRENT_QUEST);
+            DataAttachment.currentQuestRecord currentQuest = player.getData(DataAttachment.CURRENT_QUEST.get());
 
             switch(SlayerQuestsLibraryFuncs.GetQuestState(currentQuest))
             {
@@ -41,23 +48,42 @@ public class NitwitQuestGiver
                     return;
                 case "fulfilled":
 
-                    event.setCanceled(true);
+
                     break;
                 case "unassigned":
 
-                    DataAttachment.questHolderRecord villagerStoredQuest = villager.getData(DataAttachment.QUEST_HOLDER.get());
-                    if(SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager).questName() == "" || !CalculatePossibleTiers(player).contains(SlayerQuestsLibraryFuncs.GetTierObjectFromName(villagerStoredQuest.tierName())))
+
+                    DataAttachment.questHolderRecord villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager);
+                    if(villagerStoredQuest.questName() == "" || !CalculatePossibleTiers(player).contains(SlayerQuestsLibraryFuncs.GetTierObjectFromName(villagerStoredQuest.tierName())))
                     {
                         setVillagersQuest(villager, player);
+                        villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager);
                     }
 
-                    player.setData(DataAttachment.QUEST_HOLDER.get(), villagerStoredQuest);
+                    SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(player, villagerStoredQuest);
+                    SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(player);
+
+                    SlayerQuestsLibraryFuncs.Quest storedQuestObject = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsObject(villager);
 
 
-                    event.setCanceled(true);
+                    sendQuestPrompt(player, MobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName());
+
                     break;
             }
         }
+    }
+
+    static String MobPlaintext(String mobFull)
+    {
+        ResourceLocation entityLocation = ResourceLocation.parse(mobFull);
+        EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityLocation);
+
+        if (entityType != null)
+        {
+            return entityType.getDescription().getString();
+        }
+
+        return "";
     }
 
     private static List<SlayerQuestsLibraryFuncs.Tier> CalculatePossibleTiers(Player player)
@@ -103,7 +129,7 @@ public class NitwitQuestGiver
 
         SlayerQuestsLibraryFuncs.Quest questToGive = tierToGive.GetRandomQuestObject();
 
-        SlayerQuestsLibraryFuncs.DoSetStoredQuest(villager, tierToGive.name, questToGive.name, null);
+        SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(villager, tierToGive.name, questToGive.name, null);
     }
 
     private static boolean GrantStoredQuestCommandFunction(Player player)
@@ -138,9 +164,15 @@ public class NitwitQuestGiver
         );
     }
 
-    private static void sendQuestPrompt(Player player, String mob, int cap, String tier)
+    private static void sendQuestPrompt(Player player, String mob, String tier)
     {
-        Component message = Component.literal("I can offer you a tier " + tier + " quest to kill " + cap + " " + mob + "s");
+        Component text = Component.literal("I can offer you a tier " + tier + " quest to kill " + mob + "s");
+
+        MutableComponent accept = Component.literal("[accept]").withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/grantPreparedQuest")));
+
+        Component message = Component.literal("").append(text).append("\n").append(accept);
+
+        player.sendSystemMessage(message);
     }
 
 }
