@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,7 +27,11 @@ public class Tests
                 {
                     List<String> testResults = new ArrayList<>();
 
+                    Player player = (Player) context.getSource().getEntity();
+
                     testResults.add(MobIDToName());
+                    testResults.add(MobTypeMatchesQuestMob(player));
+                    testResults.add(MobTypeDoesntMatchQuestMob(player));
 
                     String componentMessage = "";
                     for(int i = 0; i < testResults.size(); i++)
@@ -92,7 +98,18 @@ public class Tests
         return "minecraft:skeleton converted to " + NitwitQuestGiver.MobPlaintext("minecraft:skeleton");
     }
 
+    private static String MobTypeMatchesQuestMob(Player player)
+    {
+        player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord("minecraft:skeleton", 0, 0, 0, "",""));
+        return "Set player quest to minecraft:skeleton and compared it against a skeleton: " + SlayerQuestsLibraryFuncs.CalcTypeMatchesQuest(player, new Skeleton(EntityType.SKELETON, player.level()));
+    }
 
+    private static String MobTypeDoesntMatchQuestMob(Player player)
+    {
+        player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord("minecraft:zombie", 0, 0, 0, "",""));
+        return "Set player quest to minecraft:zombie and compared it against a skeleton: " + SlayerQuestsLibraryFuncs.CalcTypeMatchesQuest(player, new Skeleton(EntityType.SKELETON, player.level()));
+
+    }
 
 
 }

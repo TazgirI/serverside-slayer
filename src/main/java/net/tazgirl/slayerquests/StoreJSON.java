@@ -2,14 +2,16 @@ package net.tazgirl.slayerquests;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.ModLoadingException;
-import net.neoforged.fml.ModLoadingIssue;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -24,7 +26,7 @@ import static com.google.common.io.Resources.getResource;
 public class StoreJSON
 {
     //Bad vibes: Please run only AFTER JSONToConfig()
-    public static List<SlayerQuestsLibraryFuncs.Tier> ProcessJSON()
+    public static List<SlayerQuestsLibraryFuncs.Tier> ProcessJSON(ResourceManager resourceManager)
     {
 
 
@@ -59,11 +61,10 @@ public class StoreJSON
             {
                 currentQuest = CurrentTierJson.getAsJsonObject(currentTierQuests.get(j));
 
-                System.out.println(currentQuest.get("mobID"));
 
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
-                    currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt());
+                    currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt(),currentQuest.get("lootRolls").getAsInt(),currentQuest.get("lootOverrideDirectory").getAsString(), resourceManager);
                 }
                 else
                 {
@@ -90,13 +91,17 @@ public class StoreJSON
 
         List<String> missingTables = new ArrayList<>();
 
-        ResourceLocation currentDirectory;
+        ResourceKey<LootTable> currentLootTableKey;
 
         for(String tierName : tierNames)
         {
-            currentDirectory = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tierName + ".json");
 
-            if(resourceManager.getResource(currentDirectory).isEmpty())
+            //TRY: remove .json, ask discord?
+            currentLootTableKey = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("slayerquests","tier_loot/" + tierName));
+
+            LootTable currentLootTable = server.reloadableRegistries().getLootTable(currentLootTableKey);
+
+            if(currentLootTable == LootTable.EMPTY)
             {
                 missingTables.add(tierName);
             }

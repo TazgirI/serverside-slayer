@@ -36,8 +36,6 @@ public class NitwitQuestGiver
     {
         if(event.getTarget() instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT && !event.getLevel().isClientSide)
         {
-            System.out.println(villager.getVillagerData().getProfession());
-
             Player player = event.getEntity();
             DataAttachment.currentQuestRecord currentQuest = player.getData(DataAttachment.CURRENT_QUEST.get());
 
@@ -45,10 +43,13 @@ public class NitwitQuestGiver
             {
                 case "unfulfilled":
 
+                    player.sendSystemMessage(Component.literal("You still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent() + " " + MobPlaintext(currentQuest.mob()) + "s")));
+
                     return;
                 case "fulfilled":
 
-
+                    player.sendSystemMessage(Component.literal("Thank you for the help"));
+                    SlayerQuestsLibraryFuncs.DoRewardQuest(player, true);
                     break;
                 case "unassigned":
 

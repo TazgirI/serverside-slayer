@@ -9,7 +9,9 @@
         "questSkew": 8,
         "questMax": 15,
         "questMin": 5,
-        "slayerExpPerMob": 50
+        "slayerExpPerMob": 50,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : "Quests usually call \"slayerquests:loot_tables/tier_loot/\" + quest.tier + \".json\" for their loot, whatever you put here will replace that ResourceLocation for this quest"
       },
       "If the mobID doesn't exist, an error WILL be thrown":
       {
@@ -18,7 +20,9 @@
         "questSkew": 8,
         "questMax": 7,
         "questMin": 5,
-        "slayerExpPerMob": 30
+        "slayerExpPerMob": 30,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : "Leave this as \"\" to just use the tiers generic loot table"
       }
     },
     "Take care as whatever is put as this object is returned as the 'tierName' when making quest giver dialogs":
@@ -30,7 +34,9 @@
         "questSkew": 8,
         "questMax": 28,
         "questMin": 17,
-        "slayerExpPerMob": 50
+        "slayerExpPerMob": 50,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       }
     },
     "You can have as many tiers of quest as you like, just depends on how your choice of quest giver handles it (the nitwit quest giver can handle any amount of tiers)":
@@ -42,7 +48,10 @@
         "questSkew": 8,
         "questMax": 2000000,
         "questMin": 17,
-        "slayerExpPerMob": 50
+        "slayerExpPerMob": 50,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
+
       },
       "Having a larger skew than you need may affect performance when generating quests (generation is performed via a bell curve with min and max bounds checks)":
       {
@@ -51,14 +60,16 @@
         "questSkew": 80,
         "questMax": 12,
         "questMin": 2,
-        "slayerExpPerMob": 50
+        "slayerExpPerMob": 50,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       }
     },
     "Currently undefined behaviour includes (I say undefined; everything here will at least break the quest system, some will throw a RuntimeException)":
     {
       "Tiers with no quests": {},
       "Quests setting amounts below zero": {},
-      "Quests missing the expected variables": {}
+      "Quests missing the expected variables in the JSON": {}
     }
   }
 }

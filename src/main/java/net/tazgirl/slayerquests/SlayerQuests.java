@@ -3,14 +3,23 @@ package net.tazgirl.slayerquests;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
@@ -33,6 +42,7 @@ import java.util.List;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(SlayerQuests.MODID)
+@EventBusSubscriber(modid = SlayerQuests.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class SlayerQuests
 {
     // Define mod id in a common place for everything to reference
@@ -48,33 +58,33 @@ public class SlayerQuests
     public SlayerQuests(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
-        modEventBus.addListener(this::Setup);
 
         DataAttachment.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        NeoForge.EVENT_BUS.register(this);
+
+
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
     }
 
-    private void Setup(FMLCommonSetupEvent event)
+    @SubscribeEvent
+    private static void Setup(ServerAboutToStartEvent event)
     {
-        if (Config.copyOverJSON)
-        {
-            JSONToConfig();
-        }
-        tiers = StoreJSON.ProcessJSON();
+
+        JSONToConfig();
+
+        tiers = StoreJSON.ProcessJSON(event.getServer().getResourceManager());
         validTiers = StoreJSON.ValidTierNames();
 
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
+    private static void onServerStarting(ServerStartingEvent event)
     {
 
         if (Config.validateLootTables)
@@ -83,7 +93,7 @@ public class SlayerQuests
         }
     }
 
-    private void JSONToConfig()
+    private static void JSONToConfig()
     {
         Path configDir = FMLPaths.CONFIGDIR.get();
         Path targetFile = configDir.resolve("SlayerQuests.json");

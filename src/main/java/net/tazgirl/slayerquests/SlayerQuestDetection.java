@@ -20,11 +20,10 @@ public class SlayerQuestDetection
         if(event.getSource().getEntity() instanceof Player player && event.getEntity() instanceof LivingEntity target && !player.level().isClientSide)
         {
             DataAttachment.currentQuestRecord currentQuest = player.getData(DataAttachment.CURRENT_QUEST);
-            if(Objects.equals(currentQuest.mob(), BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).toString()))
+            if(SlayerQuestsLibraryFuncs.CalcTypeMatchesQuest(player, target))
             {
-                player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord(currentQuest.mob(), currentQuest.questCurrent() + 1 + target.getData(DataAttachment.MOB_BONUS.get()).bonusAmount(),currentQuest.questCap(),currentQuest.slayerExpPerMob(),currentQuest.questName()));
+                player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord(currentQuest.mob(), currentQuest.questCurrent() + 1 + target.getData(DataAttachment.MOB_BONUS.get()).bonusAmount(),currentQuest.questCap(),currentQuest.slayerExpPerMob(),currentQuest.questName(), currentQuest.questTier()));
             }
         }
     }
-
 }

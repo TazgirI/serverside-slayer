@@ -10,7 +10,9 @@
         "questSkew": 5,
         "questMax": 15,
         "questMin": 5,
-        "slayerExpPerMob": 1
+        "slayerExpPerMob": 1,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       },
       "Rattle their bones":
       {
@@ -19,7 +21,9 @@
         "questSkew" : 2,
         "questMax": 7,
         "questMin": 5,
-        "slayerExpPerMob": 2
+        "slayerExpPerMob": 2,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       }
     },
     "2":
@@ -31,7 +35,9 @@
         "questSkew": 8,
         "questMax": 28,
         "questMin": 17,
-        "slayerExpPerMob": 3
+        "slayerExpPerMob": 3,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       },
       "Grind their bones":
       {
@@ -40,7 +46,9 @@
         "questSkew" : 4,
         "questMax": 17,
         "questMin": 12,
-        "slayerExpPerMob": 4
+        "slayerExpPerMob": 4,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       }
     },
     "3":
@@ -52,7 +60,9 @@
         "questSkew" : 4,
         "questMax": 17,
         "questMin": 12,
-        "slayerExpPerMob": 4
+        "slayerExpPerMob": 4,
+        "lootRolls": 1,
+        "lootOverrideDirectory" : ""
       }
     }
   }
