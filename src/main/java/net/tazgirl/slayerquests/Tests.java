@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Player;
@@ -77,6 +78,39 @@ public class Tests
                     return 0;
                 })
         );
+
+        dispatcher.register(Commands.literal("SpawnMyQuestLoot")
+                .requires(source -> source.hasPermission(4))
+                .executes(context ->
+                {
+                    ServerPlayer player = context.getSource().getPlayer();
+                    SlayerQuestsLibraryFuncs.DoDropPlayerQuestLoot(player,SlayerQuestsLibraryFuncs.GetQuestLootRoll(SlayerQuestsLibraryFuncs.GetQuestObjectFromPlayer(player), context.getSource().getServer()));
+
+                    return 0;
+                })
+        );
+
+        dispatcher.register(Commands.literal("ClearMySlayerLevel")
+                .requires(source -> source.hasPermission(4))
+                .executes(context ->
+                {
+                    context.getSource().getPlayer().setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.slayerExperienceRecord(1,1));
+
+                    return 0;
+                })
+        );
+
+        dispatcher.register(Commands.literal("SeeMySlayerLevel")
+                .requires(source -> source.hasPermission(4))
+                .executes(context ->
+                {
+                    context.getSource().sendSuccess(() -> Component.literal(context.getSource().getEntity().getData(DataAttachment.SLAYER_EXPERIENCE.get()).toString()), false);
+
+                    return 0;
+                })
+        );
+
+
 
 
 //        dispatcher.register(Commands.literal("")

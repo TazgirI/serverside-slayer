@@ -87,8 +87,6 @@ public class StoreJSON
 
     public static void ValidateTierLoot(List<String> tierNames, MinecraftServer server)
     {
-        ResourceManager resourceManager = server.getResourceManager();
-
         List<String> missingTables = new ArrayList<>();
 
         ResourceKey<LootTable> currentLootTableKey;
@@ -97,7 +95,7 @@ public class StoreJSON
         {
 
             //TRY: remove .json, ask discord?
-            currentLootTableKey = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("slayerquests","tier_loot/" + tierName));
+            currentLootTableKey = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse("slayerquests:tier_loot/" + tierName));
 
             LootTable currentLootTable = server.reloadableRegistries().getLootTable(currentLootTableKey);
 

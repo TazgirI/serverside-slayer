@@ -1,6 +1,8 @@
 package net.tazgirl.slayerquests;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +24,10 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+
+import static net.minecraft.commands.Commands.argument;
 
 @EventBusSubscriber(modid = SlayerQuests.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class NitwitQuestGiver
@@ -36,7 +41,7 @@ public class NitwitQuestGiver
     {
         if(event.getTarget() instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT && !event.getLevel().isClientSide)
         {
-            Player player = event.getEntity();
+            ServerPlayer player = (ServerPlayer) event.getEntity();
             DataAttachment.currentQuestRecord currentQuest = player.getData(DataAttachment.CURRENT_QUEST.get());
 
             switch(SlayerQuestsLibraryFuncs.GetQuestState(currentQuest))
@@ -49,17 +54,20 @@ public class NitwitQuestGiver
                 case "fulfilled":
 
                     player.sendSystemMessage(Component.literal("Thank you for the help"));
-                    SlayerQuestsLibraryFuncs.DoRewardQuest(player, true);
+                    SlayerQuestsLibraryFuncs.DoAttemptRewardQuest(player, true);
                     break;
                 case "unassigned":
 
-
+                    SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(villager);
                     DataAttachment.questHolderRecord villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager);
-                    if(villagerStoredQuest.questName() == "" || !CalculatePossibleTiers(player).contains(SlayerQuestsLibraryFuncs.GetTierObjectFromName(villagerStoredQuest.tierName())))
+                    if(Objects.equals(villagerStoredQuest.questName(), "") || !CalculatePossibleTiers(player).contains(SlayerQuestsLibraryFuncs.GetTierObjectFromName(villagerStoredQuest.tierName())))
                     {
                         setVillagersQuest(villager, player);
+                        SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(villager);
                         villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager);
                     }
+
+
 
                     SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(player, villagerStoredQuest);
                     SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(player);
@@ -67,7 +75,7 @@ public class NitwitQuestGiver
                     SlayerQuestsLibraryFuncs.Quest storedQuestObject = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsObject(villager);
 
 
-                    sendQuestPrompt(player, MobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName());
+                    sendQuestPrompt(player, MobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName(), villagerStoredQuest.timeWhenStored());
 
                     break;
             }
@@ -79,12 +87,9 @@ public class NitwitQuestGiver
         ResourceLocation entityLocation = ResourceLocation.parse(mobFull);
         EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityLocation);
 
-        if (entityType != null)
-        {
-            return entityType.getDescription().getString();
-        }
 
-        return "";
+        return entityType.getDescription().getString();
+
     }
 
     private static List<SlayerQuestsLibraryFuncs.Tier> CalculatePossibleTiers(Player player)
@@ -135,7 +140,7 @@ public class NitwitQuestGiver
 
     private static boolean GrantStoredQuestCommandFunction(Player player)
     {
-        DataAttachment.questHolderRecord qtgRecord = player.getData(DataAttachment.QUEST_HOLDER);
+        DataAttachment.questHolderRecord qtgRecord = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(player);
         if (qtgRecord.timeWhenStored() != null && (player.level().getGameTime() - qtgRecord.timeWhenStored()) <= Config.questTimeoutTicks)
         {
             SlayerQuestsLibraryFuncs.DoSetPlayerQuest(player,qtgRecord.tierName(),qtgRecord.questName());
@@ -150,28 +155,64 @@ public class NitwitQuestGiver
 
         dispatcher.register(Commands.literal("grantPreparedQuest")
                 .requires(source -> source.hasPermission(0))
+                .then(argument("timeWhenStored", LongArgumentType.longArg())
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    boolean success = GrantStoredQuestCommandFunction(player);
+                    boolean success = false;
 
-                    if (success) {
+                    boolean correctQuest = LongArgumentType.getLong(context, "timeWhenStored") == SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(player).timeWhenStored();
+
+                    if (!correctQuest)
+                    {
+                        context.getSource().sendSuccess(() -> Component.literal("You seem to have considered another quest since talking to me, please come and receive this offer again"), false);
+                        return 0;
+                    }
+
+                    success = GrantStoredQuestCommandFunction(player);
+
+
+                    if (success)
+                    {
                         context.getSource().sendSuccess(() -> Component.literal("Quest granted, happy hunting"), false);
                         return 1;
-                    } else {
+                    }
+                    else
+                    {
                         context.getSource().sendFailure(Component.literal("No quest stored or request timed out"));
                         return 0;
                     }
+                }))
+        );
+        dispatcher.register(Commands.literal("explainLevels")
+                .requires(source -> source.hasPermission(0))
+                .executes(context -> {
+                    ServerPlayer player = context.getSource().getPlayerOrException();
+                    Long timeWhenStored = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(player).timeWhenStored();
+                    if(Objects.equals(CalculatePossibleTiers(player).getLast().name, SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsObject(player).tier))
+                    {
+                        MutableComponent accept = Component.literal("[accept quest anyway]").withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/grantPreparedQuest " + timeWhenStored)));
+                        context.getSource().sendSuccess(() -> Component.literal("Until you get a higher level by completing quests, this is the best I can offer \n").append(accept), false);
+                    }
+                    else
+                    {
+                        MutableComponent accept = Component.literal("[accept quest anyway]").withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/grantPreparedQuest " + timeWhenStored)));
+                        context.getSource().sendSuccess(() -> Component.literal("This is all I can offer at the moment \n").append(accept), false);
+                    }
+
+
+                    return 0;
                 })
         );
     }
 
-    private static void sendQuestPrompt(Player player, String mob, String tier)
+    private static void sendQuestPrompt(Player player, String mob, String tier, long timeWhenStored)
     {
         Component text = Component.literal("I can offer you a tier " + tier + " quest to kill " + mob + "s");
 
-        MutableComponent accept = Component.literal("[accept]").withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/grantPreparedQuest")));
+        MutableComponent accept = Component.literal("[accept]").withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/grantPreparedQuest " + timeWhenStored)));
+        MutableComponent higherTier = Component.literal("[give me harder quests]").withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/explainLevels")));
 
-        Component message = Component.literal("").append(text).append("\n").append(accept);
+        Component message = Component.literal("").append(text).append("\n").append(accept).append("  ").append(higherTier);
 
         player.sendSystemMessage(message);
     }

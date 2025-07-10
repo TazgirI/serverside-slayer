@@ -1,26 +1,29 @@
 package net.tazgirl.slayerquests;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class SlayerQuestsLibraryFuncs
 {
@@ -29,7 +32,6 @@ public class SlayerQuestsLibraryFuncs
     //==================
     //   Data Classes
     //==================
-
 
     public static class Quest
     {
@@ -43,7 +45,7 @@ public class SlayerQuestsLibraryFuncs
         public int max;
 
         public int lootRolls;
-        public ResourceLocation lootOverrideDirectory;
+        public ResourceLocation lootLocation;
 
         public int CalcQuestCap()
         {
@@ -66,30 +68,30 @@ public class SlayerQuestsLibraryFuncs
 
         public void SetLootDirectory(String lootOverride, ResourceManager resourceManager)
         {
-            ResourceLocation tempLootOverrideDirectory = lootOverrideDirectory;
+            ResourceLocation tempLootLocation;
 
             if (Objects.equals(lootOverride, ""))
             {
-                tempLootOverrideDirectory = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier + ".json");
+                tempLootLocation = ResourceLocation.parse("slayerquests:tier_loot/" + tier );
             }
             else
             {
-                tempLootOverrideDirectory = ResourceLocation.tryParse(lootOverride);
+                tempLootLocation = ResourceLocation.tryParse(lootOverride);
 
-                if(tempLootOverrideDirectory == null)
+                if(tempLootLocation == null)
                 {
                     SlayerQuests.LOGGER.error("lootOverrideDirectory of \"" + lootOverride + "\", cannot be parsed, reverting to default");
-                    tempLootOverrideDirectory = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier + ".json");
+                    tempLootLocation = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier + ".json");
                 }
-                else if(resourceManager.getResource(tempLootOverrideDirectory).isEmpty())
+                else if(resourceManager.getResource(tempLootLocation).isEmpty())
                 {
                     SlayerQuests.LOGGER.error("lootOverrideDirectory of \"" + lootOverride + "\", cannot be found or does not exist, reverting to default");
-                    tempLootOverrideDirectory = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier + ".json");
+                    tempLootLocation = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier + ".json");
                 }
 
             }
 
-            lootOverrideDirectory = tempLootOverrideDirectory;
+            lootLocation = tempLootLocation;
 
         }
 
@@ -182,6 +184,8 @@ public class SlayerQuestsLibraryFuncs
             return quests.get(new Random().nextInt(0,quests.size()));
         }
 
+        public Quest GetQuestObjectFromName(String questName){return quests.get(validQuestNames.indexOf(questName));}
+
     }
 
 
@@ -235,7 +239,7 @@ public class SlayerQuestsLibraryFuncs
         }
     }
 
-    public static boolean DoRewardQuest(Player player, Boolean doRemoveQuest)
+    public static boolean DoAttemptRewardQuest(ServerPlayer player, Boolean doRemoveQuest)
     {
         DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
 
@@ -244,6 +248,8 @@ public class SlayerQuestsLibraryFuncs
             DataAttachment.slayerExperienceRecord playerExp = player.getData(DataAttachment.SLAYER_EXPERIENCE);
             int newExp = playerExp.exp() + (playerQuest.slayerExpPerMob() * playerQuest.questCap());
             player.setData(DataAttachment.SLAYER_EXPERIENCE.get(), new DataAttachment.slayerExperienceRecord(CalcExpToLevel(newExp),newExp));
+
+            DoDropPlayerQuestLoot(player,GetQuestLootRoll(GetQuestObjectFromPlayer(player),player.getServer()));
 
             if(doRemoveQuest)
             {
@@ -296,16 +302,44 @@ public class SlayerQuestsLibraryFuncs
         return player.getData(DataAttachment.CURRENT_QUEST.get());
     }
 
-    public static ItemStack QuestLootRoll(Quest quest)
+    public static List<ItemStack> GetQuestLootRoll(Quest quest, MinecraftServer server)
     {
-        return new ItemStack(new ItemLike()
+        LootTable questLootTable = GetQuestLootTable(quest, server);
+
+        List<ItemStack> itemstacksToReturn = new ArrayList<>();
+
+        LootParams.Builder lootParamsBuilder = new LootParams.Builder(server.overworld());
+        LootParams lootParams = lootParamsBuilder.create(LootContextParamSet.builder().build());
+
+        for (int i = 0; i < quest.lootRolls; i++)
         {
-            @Override
-            public Item asItem()
-            {
-                return null;
-            }
-        });
+            List<ItemStack> tempStack = questLootTable.getRandomItems(lootParams);
+
+            itemstacksToReturn.addAll(tempStack);
+        }
+
+        return itemstacksToReturn;
+    }
+
+    public static LootTable GetQuestLootTable(Quest quest, MinecraftServer server)
+    {
+        return server.reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE,quest.lootLocation));
+    }
+
+    public static void DoDropPlayerQuestLoot(ServerPlayer player, List<ItemStack> questLoot)
+    {
+        ServerLevel level = player.serverLevel();
+
+        Vec3 dropPos = player.position().add(0,2,0);
+
+        for (int i = 0; i < questLoot.size(); i++)
+        {
+            ItemEntity droppedItem = new ItemEntity(level, dropPos.x, dropPos.y, dropPos.z, questLoot.get(i).copy());
+            droppedItem.setPickUpDelay(40);
+            droppedItem.setTarget(player.getUUID());
+            level.addFreshEntity(droppedItem);
+        }
+
     }
 
     private static void ClearQuest(Player player)
@@ -321,7 +355,7 @@ public class SlayerQuestsLibraryFuncs
 
     public static int GetPlayerLevel(Player player)
     {
-        return player.getData(DataAttachment.SLAYER_EXPERIENCE).level();
+        return player.getData(DataAttachment.SLAYER_EXPERIENCE.get()).level();
     }
 
     public static int CalcExpToLevel(int exp)
@@ -402,10 +436,6 @@ public class SlayerQuestsLibraryFuncs
         entity.setData(DataAttachment.QUEST_HOLDER.get(), questHolderRecord);
     }
 
-    public int GetSlayerLevel(Player player)
-        {
-            return player.getData(DataAttachment.SLAYER_EXPERIENCE).level();
-        }
 
     public static void DoSetMobBonus(LivingEntity entity, int bonus)
     {
@@ -420,6 +450,17 @@ public class SlayerQuestsLibraryFuncs
     public static Tier GetTierObjectFromName(String tierName)
     {
         return SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName));
+    }
+
+    public static Quest GetQuestObjectFromName(String tierName, String questName)
+    {
+        return GetTierObjectFromName(tierName).GetQuestObjectFromName(questName);
+    }
+
+    public static Quest GetQuestObjectFromPlayer(Player player)
+    {
+        DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST.get());
+        return GetQuestObjectFromName(playerQuest.questTier(), playerQuest.questName());
     }
 
     //==================

@@ -1,6 +1,6 @@
 {
   "tiers": {
-    "You can rename these objects, just no duplicates":
+    "You can rename these objects, just no duplicates and make sure you create a loot_table for each name in 'slayerquests:tier_loot/tierNameHere ":
     {
       "Do not rename the variables nested WITHIN this object however":
       {
@@ -11,7 +11,7 @@
         "questMin": 5,
         "slayerExpPerMob": 50,
         "lootRolls": 1,
-        "lootOverrideDirectory" : "Quests usually call \"slayerquests:loot_tables/tier_loot/\" + quest.tier + \".json\" for their loot, whatever you put here will replace that ResourceLocation for this quest"
+        "lootOverrideDirectory" : "Quests usually call 'slayerquests:tier_loot/ + quest.tier' for their loot, whatever you put here will replace that ResourceLocation for this quest"
       },
       "If the mobID doesn't exist, an error WILL be thrown":
       {
