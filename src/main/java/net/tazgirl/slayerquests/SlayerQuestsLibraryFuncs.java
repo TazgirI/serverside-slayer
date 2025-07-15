@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,11 +19,14 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLPaths;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class SlayerQuestsLibraryFuncs
@@ -184,7 +188,15 @@ public class SlayerQuestsLibraryFuncs
             return quests.get(new Random().nextInt(0,quests.size()));
         }
 
-        public Quest GetQuestObjectFromName(String questName){return quests.get(validQuestNames.indexOf(questName));}
+        public Quest GetQuestObjectFromName(String questName)
+        {
+            if (validQuestNames.contains(questName))
+            {
+                return quests.get(validQuestNames.indexOf(questName));
+            }
+
+            return null;
+        }
 
     }
 
@@ -198,18 +210,19 @@ public class SlayerQuestsLibraryFuncs
         player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord(quest.mob, 0, quest.CalcQuestCap(), quest.expPerMob, quest.name, quest.tier));
     }
 
-    //TODO: Will throw error if either name does not exist
+
     public static void DoSetPlayerQuest(Player player, String tierName, String questName)
     {
-        Tier tier = SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName));
-        Quest quest = tier.GetQuestObjectsInTier().get(tier.GetQuestNamesInTier().indexOf(questName));
-        player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord(quest.mob, 0, quest.CalcQuestCap(), quest.expPerMob, quest.name,quest.tier));
+        if(GetDoesQuestExist(tierName, questName))
+        {
+            GetQuestObjectFromName(tierName, questName).GrantToPlayer(player);
+        }
     }
 
     public static String GetQuestState(Player player)
     {
         DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST);
-        if(playerQuest.mob() != "")
+        if(!Objects.equals(playerQuest.mob(), ""))
         {
             if(playerQuest.questCurrent()>= playerQuest.questCap())
             {
@@ -225,7 +238,7 @@ public class SlayerQuestsLibraryFuncs
 
     public static String GetQuestState(DataAttachment.currentQuestRecord playerQuest)
     {
-        if(playerQuest.mob() != "")
+        if(!Objects.equals(playerQuest.mob(), ""))
         {
             if(playerQuest.questCurrent()>= playerQuest.questCap())
             {
@@ -294,7 +307,7 @@ public class SlayerQuestsLibraryFuncs
 
     public static Boolean GetIsQuestComplete(DataAttachment.currentQuestRecord playerQuest)
     {
-        return playerQuest.mob() != "" && playerQuest.questCurrent() >= playerQuest.questCap();
+        return !Objects.equals(playerQuest.mob(), "") && playerQuest.questCurrent() >= playerQuest.questCap();
     }
 
     public static DataAttachment.currentQuestRecord GetPlayersQuestAsRecord(Player player)
@@ -332,9 +345,9 @@ public class SlayerQuestsLibraryFuncs
 
         Vec3 dropPos = player.position().add(0,2,0);
 
-        for (int i = 0; i < questLoot.size(); i++)
+        for (ItemStack itemStack : questLoot)
         {
-            ItemEntity droppedItem = new ItemEntity(level, dropPos.x, dropPos.y, dropPos.z, questLoot.get(i).copy());
+            ItemEntity droppedItem = new ItemEntity(level, dropPos.x, dropPos.y, dropPos.z, itemStack.copy());
             droppedItem.setPickUpDelay(40);
             droppedItem.setTarget(player.getUUID());
             level.addFreshEntity(droppedItem);
@@ -358,6 +371,7 @@ public class SlayerQuestsLibraryFuncs
         return player.getData(DataAttachment.SLAYER_EXPERIENCE.get()).level();
     }
 
+    //TODO: Adjust level formulae and add config
     public static int CalcExpToLevel(int exp)
     {
         return (int) Math.min(Math.round((-2.5f + Math.sqrt(10 * exp - 43.75)) / 5.0),100);
@@ -449,18 +463,43 @@ public class SlayerQuestsLibraryFuncs
 
     public static Tier GetTierObjectFromName(String tierName)
     {
-        return SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName));
+        if(GetDoesTierExist(tierName))
+        {
+            return SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName));
+        }
+        return null;
     }
+
+
 
     public static Quest GetQuestObjectFromName(String tierName, String questName)
     {
-        return GetTierObjectFromName(tierName).GetQuestObjectFromName(questName);
+        if(GetDoesQuestExist(tierName,questName))
+        {
+            return GetTierObjectFromName(tierName).GetQuestObjectFromName(questName);
+        }
+        return null;
     }
 
     public static Quest GetQuestObjectFromPlayer(Player player)
     {
         DataAttachment.currentQuestRecord playerQuest = player.getData(DataAttachment.CURRENT_QUEST.get());
         return GetQuestObjectFromName(playerQuest.questTier(), playerQuest.questName());
+    }
+
+    public static boolean GetDoesQuestExist(String tierName, String questName)
+    {
+        if(SlayerQuests.validTiers.contains(tierName))
+        {
+            return SlayerQuests.tiers.get(SlayerQuests.validTiers.indexOf(tierName)).GetQuestNamesInTier().contains(questName);
+        }
+
+        return false;
+    }
+
+    public static boolean GetDoesTierExist(String tierName)
+    {
+        return SlayerQuests.validTiers.contains(tierName);
     }
 
     //==================
@@ -564,32 +603,37 @@ public class SlayerQuestsLibraryFuncs
     //=======================
 
 
-    //fileTOCopyDir should be something like "/data/slayerquests/SlayerQuests.json"
-    public static void DoJSONToConfig(String fileToCopyDir)
+    //fileTOCopyDir should be something like "slayerquests:SlayerQuests.json"
+    public static boolean DoJSONToConfig(String locationToCopyDir, MinecraftServer server, Boolean checkForExisting) throws IOException
     {
         Path configDir = FMLPaths.CONFIGDIR.get();
-        Path targetFile = configDir.resolve("SlayerQuests.json");
+        Path outputFile = configDir.resolve("SlayerQuests.json");
 
-        if (Files.notExists(targetFile))
+        if(!Files.notExists(outputFile) && checkForExisting)
         {
-            try (InputStream in = SlayerQuests.class.getResourceAsStream(fileToCopyDir))
-            {
-                if(in != null)
-                {
-                    Files.copy(in, targetFile);
-                }
-                else
-                {
-                    SlayerQuests.LOGGER.error("No SlayerQuests.json could be found");
-                    throw new RuntimeException("Missing SlayerQuests.json at '" + fileToCopyDir + "' or config directory");
-                }
+            return true;
+        }
 
+        ResourceManager resourceManager = server.getResourceManager();
+
+        ResourceLocation locationToCopy = ResourceLocation.parse(locationToCopyDir);
+
+        if(resourceManager.getResource(locationToCopy).isPresent())
+        {
+            Resource fileToCopy = resourceManager.getResource(locationToCopy).get();
+            try(InputStream inputFile = fileToCopy.open())
+            {
+                Files.copy(inputFile,outputFile, StandardCopyOption.REPLACE_EXISTING);
+                return true;
             }
-            catch (IOException error) {
-                SlayerQuests.LOGGER.error("SlayerQuests.json generation failed", error);
-                throw new RuntimeException("Could not generate SlayerQuests.json", error);
+            catch (IOException exception)
+            {
+                throw new RuntimeException("Failed to copy \"" + locationToCopyDir + "\" to the ConfigDir");
             }
         }
+
+        return false;
+
 
     }
 }

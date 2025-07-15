@@ -72,10 +72,13 @@ public class SlayerQuests
     }
 
     @SubscribeEvent
-    private static void Setup(ServerAboutToStartEvent event)
+    private static void Setup(ServerAboutToStartEvent event) throws IOException
     {
 
-        JSONToConfig();
+        if(Config.copyOverJSON)
+        {
+            SlayerQuestsLibraryFuncs.DoJSONToConfig("slayerquests:SlayerQuests.json",event.getServer(),true);
+        }
 
         tiers = StoreJSON.ProcessJSON(event.getServer().getResourceManager());
         validTiers = StoreJSON.ValidTierNames();
@@ -92,38 +95,6 @@ public class SlayerQuests
             StoreJSON.ValidateTierLoot(validTiers, event.getServer());
         }
     }
-
-    private static void JSONToConfig()
-    {
-        Path configDir = FMLPaths.CONFIGDIR.get();
-        Path targetFile = configDir.resolve("SlayerQuests.json");
-
-        if (Files.notExists(targetFile))
-        {
-            try (InputStream in = SlayerQuests.class.getResourceAsStream("/data/slayerquests/SlayerQuests.json"))
-            {
-                if (in != null)
-                {
-                    Files.copy(in, targetFile);
-                } else
-                {
-                    LOGGER.error("No SlayerQuests.json could be found");
-
-                    throw new RuntimeException("Missing SlayerQuests.json in '/data/slayerquests/SlayerQuests.json' or config directory");
-
-                }
-
-            } catch (IOException error)
-            {
-                LOGGER.error("SlayerQuests.json generation failed", error);
-                throw new RuntimeException("SlayerQuests.json generation failed", error);
-
-
-            }
-        }
-
-    }
-
 }
 
 
