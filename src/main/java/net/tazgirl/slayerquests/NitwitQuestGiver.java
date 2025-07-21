@@ -2,24 +2,22 @@ package net.tazgirl.slayerquests;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
@@ -32,8 +30,6 @@ import static net.minecraft.commands.Commands.argument;
 @EventBusSubscriber(modid = SlayerQuests.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class NitwitQuestGiver
 {
-    //TODO: Turn all GetData and SetData calls into library funcs
-
 
 
     @SubscribeEvent
@@ -42,13 +38,13 @@ public class NitwitQuestGiver
         if(event.getTarget() instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT && !event.getLevel().isClientSide)
         {
             ServerPlayer player = (ServerPlayer) event.getEntity();
-            DataAttachment.currentQuestRecord currentQuest = player.getData(DataAttachment.CURRENT_QUEST.get());
+            DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
 
             switch(SlayerQuestsLibraryFuncs.GetQuestState(currentQuest))
             {
                 case "unfulfilled":
 
-                    player.sendSystemMessage(Component.literal("You still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent() + " " + MobPlaintext(currentQuest.mob()) + "s")));
+                    player.sendSystemMessage(Component.literal("You still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent() + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob()) + "s")));
 
                     return;
                 case "fulfilled":
@@ -75,22 +71,14 @@ public class NitwitQuestGiver
                     SlayerQuestsLibraryFuncs.Quest storedQuestObject = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsObject(villager);
 
 
-                    sendQuestPrompt(player, MobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName(), villagerStoredQuest.timeWhenStored());
+                    sendQuestPrompt(player, SlayerQuestsLibraryFuncs.GetMobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName(), villagerStoredQuest.timeWhenStored());
 
                     break;
             }
         }
     }
 
-    static String MobPlaintext(String mobFull)
-    {
-        ResourceLocation entityLocation = ResourceLocation.parse(mobFull);
-        EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityLocation);
 
-
-        return entityType.getDescription().getString();
-
-    }
 
     private static List<SlayerQuestsLibraryFuncs.Tier> CalculatePossibleTiers(Player player)
     {
@@ -131,11 +119,11 @@ public class NitwitQuestGiver
     private static void setVillagersQuest(Villager villager, Player player)
     {
         List<SlayerQuestsLibraryFuncs.Tier> possibleTiers = CalculatePossibleTiers(player);
-        SlayerQuestsLibraryFuncs.Tier tierToGive = possibleTiers.get(new Random().nextInt(possibleTiers.size()));
+        SlayerQuestsLibraryFuncs.Tier tierToGive = possibleTiers.get((int) (Math.pow(Math.random(), 0.5) * possibleTiers.size()));
 
         SlayerQuestsLibraryFuncs.Quest questToGive = tierToGive.GetRandomQuestObject();
 
-        SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(villager, tierToGive.name, questToGive.name, null);
+        SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(villager, tierToGive.name, questToGive.name, null, villager.getId());
     }
 
     private static boolean GrantStoredQuestCommandFunction(Player player)
@@ -147,6 +135,28 @@ public class NitwitQuestGiver
             return true;
         }
         return false;
+    }
+
+    @SubscribeEvent
+    private static void onPlayerJoins(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        if(Config.sendQuestReminder)
+        {
+            Player player = event.getEntity();
+            String playerState = SlayerQuestsLibraryFuncs.GetQuestState(player);
+            if(playerState.equals("unfulfilled"))
+            {
+                DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
+
+                player.sendSystemMessage(Component.literal("Reminder, you still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent()) + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob() + "s")).withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
+            }
+            else if(playerState.equals("fulfilled"))
+            {
+                player.sendSystemMessage(Component.literal("You have a completed quest to hand in").withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
+            }
+
+
+        }
     }
 
     @SubscribeEvent
@@ -173,7 +183,9 @@ public class NitwitQuestGiver
 
                     if (success)
                     {
-                        context.getSource().sendSuccess(() -> Component.literal("Quest granted, happy hunting"), false);
+                        DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
+                        context.getSource().sendSuccess(() -> Component.literal("Quest granted, happy hunting.\nCome back after you've killed " + currentQuest.questCap() + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob()) + "s"), false);
+                        SlayerQuestsLibraryFuncs.DoClearStoredQuestHolder((LivingEntity) player.level().getEntity(SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(player).sourceUuid()));
                         return 1;
                     }
                     else

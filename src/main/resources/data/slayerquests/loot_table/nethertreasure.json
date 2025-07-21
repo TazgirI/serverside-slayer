@@ -1,0 +1,354 @@
+{
+  "type": "minecraft:gift",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_block",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 2,
+                "max": 3
+              }
+            }
+          ],
+          "conditions": []
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:ancient_debris",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:sequence",
+              "functions": [
+                {
+                  "function": "minecraft:set_item",
+                  "count": {
+                    "type": "minecraft:binomial",
+                    "n": 4,
+                    "p": 0.3
+                  },
+                  "item": "minecraft:netherite_scrap",
+                  "conditions": [
+                    {
+                      "condition": "minecraft:random_chance",
+                      "chance": 0.3
+                    }
+                  ]
+                },
+                {
+                  "function": "minecraft:set_count",
+                  "count": {
+                    "type": "minecraft:binomial",
+                    "n": 2,
+                    "p": 0.3
+                  },
+                  "add": true
+                }
+              ]
+            }
+          ],
+          "conditions": []
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_golden_apple",
+          "weight": 1,
+          "conditions": []
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:nether_quartz_ore",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "enchantment": "",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 4,
+                "max": 17
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:crying_obsidian",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 6
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_helmet",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:fire_protection",
+                "minecraft:protection",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:projectile_protection",
+                "minecraft:blast_protection",
+                "minecraft:unbreaking"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:unbreaking"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:thorns",
+                "minecraft:unbreaking",
+                "minecraft:mending"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:aqua_affinity"
+              ]
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:respiration"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_chestplate",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:fire_protection",
+                "minecraft:protection",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:projectile_protection",
+                "minecraft:blast_protection",
+                "minecraft:unbreaking",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:unbreaking"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:thorns",
+                "minecraft:unbreaking",
+                "minecraft:mending"
+              ],
+              "only_compatible": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_leggings",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:fire_protection",
+                "minecraft:protection",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:projectile_protection",
+                "minecraft:blast_protection",
+                "minecraft:unbreaking",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:unbreaking"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:thorns",
+                "minecraft:unbreaking",
+                "minecraft:mending"
+              ],
+              "only_compatible": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_boots",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:fire_protection",
+                "minecraft:protection",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:projectile_protection",
+                "minecraft:blast_protection",
+                "minecraft:unbreaking",
+                "minecraft:thorns"
+              ],
+              "only_compatible": false
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:unbreaking"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:thorns",
+                "minecraft:unbreaking",
+                "minecraft:mending"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:feather_falling",
+                "minecraft:depth_strider"
+              ],
+              "only_compatible": true
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": [
+                "minecraft:feather_falling",
+                "minecraft:depth_strider"
+              ],
+              "only_compatible": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gilded_blackstone",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:binomial",
+                "n": 4,
+                "p": 0.2
+              },
+              "add": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_apple",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:binomial",
+                "n": 6,
+                "p": {
+                  "type": "minecraft:uniform",
+                  "min": 0.1,
+                  "max": 1
+                }
+              },
+              "add": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wither_skeleton_skull",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wither_rose",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:binomial",
+                "n": 3,
+                "p": 0.45
+              },
+              "add": true
+            }
+          ]
+        }
+      ],
+      "rolls": 27,
+      "functions": []
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package net.tazgirl.slayerquests;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.ChatFormatting;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
@@ -11,14 +12,18 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
@@ -38,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -52,6 +58,7 @@ public class SlayerQuests
 
     static List<SlayerQuestsLibraryFuncs.Tier> tiers;
     static List<String> validTiers;
+    static List<Integer> levelBoundries;
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -80,10 +87,13 @@ public class SlayerQuests
             SlayerQuestsLibraryFuncs.DoJSONToConfig("slayerquests:SlayerQuests.json",event.getServer(),true);
         }
 
-        tiers = StoreJSON.ProcessJSON(event.getServer().getResourceManager());
-        validTiers = StoreJSON.ValidTierNames();
+        tiers = StoreJSON.ProcessJSON(event.getServer().getResourceManager(),event.getServer());
+        validTiers = StoreJSON.ValidTierNames(event.getServer().getResourceManager());
+        levelBoundries = CalcLevelBoundriesList();
 
     }
+
+
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
@@ -94,6 +104,18 @@ public class SlayerQuests
         {
             StoreJSON.ValidateTierLoot(validTiers, event.getServer());
         }
+    }
+
+    private static List<Integer> CalcLevelBoundriesList()
+    {
+        List<Integer> listToReturn = new ArrayList<>();
+
+        for(int i = 1; i < 101; i++)
+        {
+            listToReturn.add(SlayerQuestsLibraryFuncs.CalcLevelToExpTotal(i));
+        }
+
+        return listToReturn;
     }
 }
 

@@ -2,33 +2,29 @@ package net.tazgirl.slayerquests;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.io.Resources.getResource;
 
 public class StoreJSON
 {
-    //Bad vibes: Please run only AFTER JSONToConfig()
-    public static List<SlayerQuestsLibraryFuncs.Tier> ProcessJSON(ResourceManager resourceManager)
+    //TODO: Definite optimization to be found, probably in the form of codecs
+    public static List<SlayerQuestsLibraryFuncs.Tier> ProcessJSON(ResourceManager resourceManager, MinecraftServer server)
     {
-
 
         List<SlayerQuestsLibraryFuncs.Tier> tierListToReturn = new ArrayList<>();
 
@@ -37,7 +33,7 @@ public class StoreJSON
         JsonObject CurrentTierJson;
         JsonObject currentQuest;
 
-        JsonObject questsFile = FetchSlayerQuestsJSON();
+        JsonObject questsFile = FetchSlayerQuestsJSON(resourceManager);
 
         JsonObject tiersJSON = questsFile.getAsJsonObject("tiers");
 
@@ -64,7 +60,7 @@ public class StoreJSON
 
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
-                    currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsInt(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt(),currentQuest.get("lootRolls").getAsInt(),currentQuest.get("lootOverrideDirectory").getAsString(), resourceManager);
+                    currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsFloat(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt(),currentQuest.get("lootRolls").getAsInt(),currentQuest.get("lootOverrideDirectory").getAsString(), server);
                 }
                 else
                 {
@@ -77,9 +73,9 @@ public class StoreJSON
     }
 
     //Also has bad vibes
-    public static List<String> ValidTierNames()
+    public static List<String> ValidTierNames(ResourceManager resourceManager)
     {
-        JsonObject questsFile = FetchSlayerQuestsJSON();
+        JsonObject questsFile = FetchSlayerQuestsJSON(resourceManager);
         JsonObject tiersJSON = questsFile.getAsJsonObject("tiers");
 
         return new ArrayList<>(tiersJSON.keySet());
@@ -93,13 +89,7 @@ public class StoreJSON
 
         for(String tierName : tierNames)
         {
-
-            //TRY: remove .json, ask discord?
-            currentLootTableKey = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse("slayerquests:tier_loot/" + tierName));
-
-            LootTable currentLootTable = server.reloadableRegistries().getLootTable(currentLootTableKey);
-
-            if(currentLootTable == LootTable.EMPTY)
+            if(!VerifyLootTable("slayerquests:tier_loot/" + tierName,server))
             {
                 missingTables.add(tierName);
             }
@@ -113,19 +103,37 @@ public class StoreJSON
 
     }
 
-    //Confirm file BEFORE running
-    public static JsonObject FetchSlayerQuestsJSON()
+    //Returns true if a loot table is found at location
+    public static boolean VerifyLootTable(String location, MinecraftServer server)
     {
-        Gson gson = new Gson();
+        ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(location));
 
-        Path filePath = FMLPaths.CONFIGDIR.get().resolve("SlayerQuests.json");
+        LootTable currentLootTable = server.reloadableRegistries().getLootTable(lootTableKey);
 
-        try (Reader reader = Files.newBufferedReader(filePath)) {
+        return currentLootTable != LootTable.EMPTY;
+    }
+
+
+    //TODO: Replace with JsonOps?
+    public static JsonObject FetchSlayerQuestsJSON(ResourceManager resourceManager)
+    {
+        ResourceLocation filePath = ResourceLocation.parse("slayerquests:slayerquests.json");
+
+        Optional<Resource> fileResource = resourceManager.getResource(filePath);
+
+        if(fileResource.isEmpty())
+        {
+            throw new RuntimeException("SlayerQuests.json could not be found in server resources");
+        }
+
+        try (Reader reader = new InputStreamReader(fileResource.get().open()))
+        {
+            Gson gson = new Gson();
             return gson.fromJson(reader, JsonObject.class);
         }
-        catch (IOException error)
+        catch (IOException e)
         {
-            throw new RuntimeException("SlayerQuests.json not found in config directory. Was this void called incorrectly?", error);
+            throw new RuntimeException("Failed to read SlayerQuests.json", e);
         }
     }
 

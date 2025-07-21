@@ -12,8 +12,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @EventBusSubscriber(modid = SlayerQuests.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class Tests
@@ -33,6 +35,8 @@ public class Tests
                     testResults.add(MobIDToName());
                     testResults.add(MobTypeMatchesQuestMob(player));
                     testResults.add(MobTypeDoesntMatchQuestMob(player));
+                    testResults.add(RandomLevelAsExp());
+                    testResults.add(RandomLevelAsExpTotal());
 
                     String componentMessage = "";
                     for(int i = 0; i < testResults.size(); i++)
@@ -113,6 +117,9 @@ public class Tests
 
 
 
+
+
+
 //        dispatcher.register(Commands.literal("")
 //                .requires(source -> source.hasPermission(4))
 //                .executes(context ->
@@ -129,7 +136,7 @@ public class Tests
 
     private static String MobIDToName()
     {
-        return "minecraft:skeleton converted to " + NitwitQuestGiver.MobPlaintext("minecraft:skeleton");
+        return "minecraft:skeleton converted to " + SlayerQuestsLibraryFuncs.GetMobPlaintext("minecraft:skeleton");
     }
 
     private static String MobTypeMatchesQuestMob(Player player)
@@ -143,6 +150,22 @@ public class Tests
         player.setData(DataAttachment.CURRENT_QUEST.get(), new DataAttachment.currentQuestRecord("minecraft:zombie", 0, 0, 0, "",""));
         return "Set player quest to minecraft:zombie and compared it against a skeleton: " + SlayerQuestsLibraryFuncs.CalcTypeMatchesQuest(player, new Skeleton(EntityType.SKELETON, player.level()));
 
+    }
+
+    private static String RandomLevelAsExp()
+    {
+        Random random = new Random();
+        int randomNumber = random.nextInt(100);
+        int result =  SlayerQuestsLibraryFuncs.CalcLevelToExp(randomNumber);
+        return randomNumber + " converted to " + result + " exp";
+    }
+
+    private static String RandomLevelAsExpTotal()
+    {
+        Random random = new Random();
+        int randomNumber = random.nextInt(100);
+        int result =  SlayerQuestsLibraryFuncs.CalcLevelToExpTotal(randomNumber);
+        return randomNumber + " converted to " + result + " exp total";
     }
 
 

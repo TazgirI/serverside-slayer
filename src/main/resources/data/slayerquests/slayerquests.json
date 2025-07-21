@@ -1,0 +1,396 @@
+{
+  "tiers": {
+    "1": {
+      "Hunting bacon": {
+        "mobID": "minecraft:pig",
+        "questAverage": 5,
+        "questSkew": 2,
+        "questMax": 7,
+        "questMin": 3,
+        "slayerExpPerMob": 2,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Skin their hides": {
+        "mobID": "minecraft:cow",
+        "questAverage": 7,
+        "questSkew": 3,
+        "questMax": 7,
+        "questMin": 4,
+        "slayerExpPerMob": 3.1,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "I'm craving mutton": {
+        "mobID": "minecraft:sheep",
+        "questAverage": 7,
+        "questSkew": 4,
+        "questMax": 8,
+        "questMin": 3,
+        "slayerExpPerMob": 2.6,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Babies first walkers": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 2,
+        "questSkew": 1,
+        "questMax": 3,
+        "questMin": 2,
+        "slayerExpPerMob": 7.75,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Too spooky": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 1,
+        "questSkew": 2,
+        "questMax": 2,
+        "questMin": 2,
+        "slayerExpPerMob": 9,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Too many tentacles": {
+        "mobID": "minecraft:squid",
+        "questAverage": 4,
+        "questSkew": 2,
+        "questMax": 6,
+        "questMin": 3,
+        "slayerExpPerMob": 3.4,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      }
+    },
+    "2": {
+      "Spitting is wrong": {
+        "mobID": "minecraft:llama",
+        "questAverage": 4,
+        "questSkew": 1,
+        "questMax": 5,
+        "questMin": 3,
+        "slayerExpPerMob": 7.5,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Too fast, too fast and small": {
+        "mobID": "minecraft:rabbit",
+        "questAverage": 12,
+        "questSkew": 4,
+        "questMax": 16,
+        "questMin": 10,
+        "slayerExpPerMob": 3,
+        "lootRolls": 1,
+        "lootOverrideDirectory": "slayerquests:tier_loot/3"
+      },
+      "Slimy": {
+        "mobID": "minecraft:frog",
+        "questAverage": 6,
+        "questSkew": 2,
+        "questMax": 8,
+        "questMin": 5,
+        "slayerExpPerMob": 4,
+        "lootRolls": 4,
+        "lootOverrideDirectory": "slayerquests:slimetable"
+      },
+      "They keep knocking me off the mountain": {
+        "mobID": "minecraft:goat",
+        "questAverage": 4,
+        "questSkew": 1,
+        "questMax": 5,
+        "questMin": 3,
+        "slayerExpPerMob": 3,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Protect my scute monopoly": {
+        "mobID": "minecraft:armadillo",
+        "questAverage": 3,
+        "questSkew": 1,
+        "questMax": 2,
+        "questMin": 4,
+        "slayerExpPerMob": 7.5,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "A gaggle of zombies": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 6,
+        "questSkew": 3,
+        "questMax": 9,
+        "questMin": 6,
+        "slayerExpPerMob": 7.5,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Remove the competition": {
+        "mobID": "minecraft:wandering_trader",
+        "questAverage": 1,
+        "questSkew": 0,
+        "questMax": 1,
+        "questMin": 1,
+        "slayerExpPerMob": 45,
+        "lootRolls": 1,
+        "lootOverrideDirectory": "slayerquests:tier_loot/3"
+      },
+      "A spot of manual fishing ": {
+        "mobID": "minecraft:salmon",
+        "questAverage": 12,
+        "questSkew": 3,
+        "questMax": 15,
+        "questMin": 10,
+        "slayerExpPerMob": 1.8,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "No need to be so toxic": {
+        "mobID": "minecraft:pufferfish",
+        "questAverage": 2,
+        "questSkew": 1,
+        "questMax": 3,
+        "questMin": 1,
+        "slayerExpPerMob": 11,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Bloody Defusal": {
+        "mobID": "minecraft:creeper",
+        "questAverage": 2,
+        "questSkew": 1,
+        "questMax": 3,
+        "questMin": 2,
+        "slayerExpPerMob": 11,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "I thought eye contact was polite": {
+        "mobID": "minecraft:enderman",
+        "questAverage": 2,
+        "questSkew": 1,
+        "questMax": 3,
+        "questMin": 2,
+        "slayerExpPerMob": 11,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      }
+    },
+    "3": {
+      "Rare oddities": {
+        "mobID": "minecraft:mooshroom",
+        "questAverage": 16,
+        "questSkew": 4,
+        "questMax": 17,
+        "questMin": 12,
+        "slayerExpPerMob": 4,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Poke the angry pig": {
+        "mobID": "minecraft:zombified_piglin",
+        "questAverage": 16,
+        "questSkew": 4,
+        "questMax": 17,
+        "questMin": 12,
+        "slayerExpPerMob": 4,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Master of the chase": {
+        "mobID": "minecraft:ocelot",
+        "questAverage": 4,
+        "questSkew": 2,
+        "questMax": 6,
+        "questMin": 3,
+        "slayerExpPerMob": 24,
+        "lootRolls": 2,
+        "lootOverrideDirectory": ""
+      },
+      "Okay, thats a horde now": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 16,
+        "questSkew": 4,
+        "questMax": 20,
+        "questMin": 14,
+        "slayerExpPerMob": 4.2,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "We don't barter around here": {
+        "mobID": "minecraft:piglin",
+        "questAverage": 12,
+        "questSkew": 4,
+        "questMax": 13,
+        "questMin": 8,
+        "slayerExpPerMob": 4.2,
+        "lootRolls": 7,
+        "lootOverrideDirectory": "minecraft:gameplay/piglin_bartering"
+      },
+      "We could put a village here": {
+        "mobID": "minecraft:polar_bear",
+        "questAverage": 12,
+        "questSkew": 3,
+        "questMax": 14,
+        "questMin": 9,
+        "slayerExpPerMob": 7.2,
+        "lootRolls": 5,
+        "lootOverrideDirectory": "minecraft:gameplay/fishing/treasure"
+      },
+      "Stop leaving holes!!!": {
+        "mobID": "minecraft:creeper",
+        "questAverage": 5,
+        "questSkew": 2,
+        "questMax": 7,
+        "questMin": 4,
+        "slayerExpPerMob": 11.5,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Those warts make me uncomfortable": {
+        "mobID": "minecraft:witch",
+        "questAverage": 2,
+        "questSkew": 1,
+        "questMax": 3,
+        "questMin": 1,
+        "slayerExpPerMob": 32,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Too hot": {
+        "mobID": "minecraft:blaze",
+        "questAverage": 4,
+        "questSkew": 4,
+        "questMax": 8,
+        "questMin": 4,
+        "slayerExpPerMob": 17,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      }
+    },
+    "4": {
+      "Let me down from here": {
+        "mobID": "minecraft:shulker",
+        "questAverage": 12,
+        "questSkew": 4,
+        "questMax": 13,
+        "questMin": 8,
+        "slayerExpPerMob": 22,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "They're keeping me from the gold": {
+        "mobID": "minecraft:piglin_brute",
+        "questAverage": 7,
+        "questSkew": 2,
+        "questMax": 9,
+        "questMin": 7,
+        "slayerExpPerMob": 35,
+        "lootRolls": 3,
+        "lootOverrideDirectory": "slayerquests:nethertreasure"
+      },
+      "The industry calls for fuel": {
+        "mobID": "minecraft:blaze",
+        "questAverage": 23,
+        "questSkew": 9,
+        "questMax": 32,
+        "questMin": 18,
+        "slayerExpPerMob": 16,
+        "lootRolls": 2,
+        "lootOverrideDirectory": ""
+      },
+      "The excecutionors cage": {
+        "mobID": "minecraft:allay",
+        "questAverage": 3,
+        "questSkew": 1,
+        "questMax": 4,
+        "questMin": 2,
+        "slayerExpPerMob": 92,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "You are all maggots": {
+        "mobID": "minecraft:breeze",
+        "questAverage": 14,
+        "questSkew": 3,
+        "questMax": 17,
+        "questMin": 11,
+        "slayerExpPerMob": 15,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      }
+    },
+    "5": {
+      "It's just one blind guy": {
+        "mobID": "minecraft:warden",
+        "questAverage": 1,
+        "questSkew": 0,
+        "questMax": 1,
+        "questMin": 1,
+        "slayerExpPerMob": 600,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Free the End (again)": {
+        "mobID": "minecraft:ender_dragon",
+        "questAverage": 1,
+        "questSkew": 0,
+        "questMax": 1,
+        "questMin": 1,
+        "slayerExpPerMob": 600,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Brought back just for slaughter": {
+        "mobID": "minecraft:sniffer",
+        "questAverage": 4,
+        "questSkew": 1,
+        "questMax": 5,
+        "questMin": 3,
+        "slayerExpPerMob": 160,
+        "lootRolls": 10,
+        "lootOverrideDirectory": "minecraft:gameplay/sniffer_digging"
+      }
+    },
+    "6": {
+      "This feels like a hate crime": {
+        "mobID": "minecraft:warden",
+        "questAverage": 5,
+        "questSkew": 3,
+        "questMax": 8,
+        "questMin": 5,
+        "slayerExpPerMob": 210,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Make Seaspiricies data correct": {
+        "mobID": "minecraft:elder_guardian",
+        "questAverage": 7,
+        "questSkew": 2,
+        "questMax": 9,
+        "questMin": 5,
+        "slayerExpPerMob": 230,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "'Last of the Dragons' my ass": {
+        "mobID": "minecraft:ender_dragon",
+        "questAverage": 8,
+        "questSkew": 2,
+        "questMax": 8,
+        "questMin": 6,
+        "slayerExpPerMob": 165,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "They're hidden in the thunder": {
+        "mobID": "minecraft:skeleton_horse",
+        "questAverage": 3,
+        "questSkew": 1,
+        "questMax": 4,
+        "questMin": 2,
+        "slayerExpPerMob": 500,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      }
+    }
+  }
+}
