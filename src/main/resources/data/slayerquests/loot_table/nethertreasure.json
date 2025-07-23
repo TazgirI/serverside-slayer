@@ -7,15 +7,16 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:gold_block",
-          "weight": 4,
+          "weight": 8,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 3
-              }
+                "type": "minecraft:binomial",
+                "n": 2,
+                "p": 0.5
+              },
+              "add": true
             }
           ],
           "conditions": []
@@ -23,7 +24,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:ancient_debris",
-          "weight": 2,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:sequence",
@@ -47,7 +48,7 @@
                   "function": "minecraft:set_count",
                   "count": {
                     "type": "minecraft:binomial",
-                    "n": 2,
+                    "n": 1,
                     "p": 0.3
                   },
                   "add": true
@@ -60,13 +61,24 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:enchanted_golden_apple",
-          "weight": 1,
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:binomial",
+                "n": 1,
+                "p": 0.35
+              },
+              "add": true
+            }
+          ],
           "conditions": []
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:nether_quartz_ore",
-          "weight": 8,
+          "weight": 16,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -82,7 +94,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:crying_obsidian",
-          "weight": 3,
+          "weight": 6,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -97,7 +109,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_helmet",
-          "weight": 2,
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:enchant_randomly",
@@ -150,7 +162,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_chestplate",
-          "weight": 2,
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:enchant_randomly",
@@ -192,7 +204,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_leggings",
-          "weight": 2,
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:enchant_randomly",
@@ -234,7 +246,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_boots",
-          "weight": 2,
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:enchant_randomly",
@@ -292,7 +304,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:gilded_blackstone",
-          "weight": 2,
+          "weight": 4,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -308,7 +320,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_apple",
-          "weight": 3,
+          "weight": 6,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -328,12 +340,12 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:wither_skeleton_skull",
-          "weight": 1
+          "weight": 3
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:wither_rose",
-          "weight": 3,
+          "weight": 6,
           "functions": [
             {
               "function": "minecraft:set_count",

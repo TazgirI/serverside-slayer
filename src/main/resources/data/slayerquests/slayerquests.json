@@ -60,6 +60,16 @@
         "slayerExpPerMob": 3.4,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
+      },
+      "I need more pillow stuffing": {
+        "mobID": "minecraft:chicken",
+        "questAverage": 6,
+        "questSkew": 2,
+        "questMax": 8,
+        "questMin": 4,
+        "slayerExpPerMob": 2.1,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
       }
     },
     "2": {
@@ -123,11 +133,21 @@
         "lootRolls": 1,
         "lootOverrideDirectory": ""
       },
+      "My knee! They got my knee!": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 3,
+        "questSkew": 2,
+        "questMax": 5,
+        "questMin": 3,
+        "slayerExpPerMob": 9,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
       "Remove the competition": {
         "mobID": "minecraft:wandering_trader",
         "questAverage": 1,
-        "questSkew": 0,
-        "questMax": 1,
+        "questSkew": 1,
+        "questMax": 2,
         "questMin": 1,
         "slayerExpPerMob": 45,
         "lootRolls": 1,
@@ -172,6 +192,16 @@
         "slayerExpPerMob": 11,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
+      },
+      "We're already low on food": {
+        "mobID": "minecraft:husk",
+        "questAverage": 5,
+        "questSkew": 2,
+        "questMax": 7,
+        "questMin": 3,
+        "slayerExpPerMob": 4.7,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
       }
     },
     "3": {
@@ -205,13 +235,23 @@
         "lootRolls": 2,
         "lootOverrideDirectory": ""
       },
-      "Okay, thats a horde now": {
+      "Okay, that's a horde now": {
         "mobID": "minecraft:zombie",
-        "questAverage": 16,
-        "questSkew": 4,
-        "questMax": 20,
-        "questMin": 14,
-        "slayerExpPerMob": 4.2,
+        "questAverage": 9,
+        "questSkew": 5,
+        "questMax": 14,
+        "questMin": 7,
+        "slayerExpPerMob": 6.8,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "The crops need fertilising": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 5,
+        "questSkew": 3,
+        "questMax": 8,
+        "questMin": 3,
+        "slayerExpPerMob": 9.2,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
       },
@@ -264,6 +304,26 @@
         "slayerExpPerMob": 17,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
+      },
+      "Too hot (and square)": {
+        "mobID": "minecraft:magma_cube",
+        "questAverage": 28,
+        "questSkew": 15,
+        "questMax": 43,
+        "questMin": 28,
+        "slayerExpPerMob": 4.25,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Protect our fishing boats]": {
+        "mobID": "minecraft:guardian",
+        "questAverage": 5,
+        "questSkew": 3,
+        "questMax": 8,
+        "questMin": 4,
+        "slayerExpPerMob": 12,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
       }
     },
     "4": {
@@ -284,7 +344,7 @@
         "questMax": 9,
         "questMin": 7,
         "slayerExpPerMob": 35,
-        "lootRolls": 3,
+        "lootRolls": 2,
         "lootOverrideDirectory": "slayerquests:nethertreasure"
       },
       "The industry calls for fuel": {
@@ -297,7 +357,7 @@
         "lootRolls": 2,
         "lootOverrideDirectory": ""
       },
-      "The excecutionors cage": {
+      "The executioners cage": {
         "mobID": "minecraft:allay",
         "questAverage": 3,
         "questSkew": 1,
@@ -316,6 +376,96 @@
         "slayerExpPerMob": 15,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
+      },
+      "Apocalypse prevention": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 34,
+        "questSkew": 9,
+        "questMax": 43,
+        "questMin": 25,
+        "slayerExpPerMob": 7.3,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "So. Many. Arrows.": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 17,
+        "questSkew": 4,
+        "questMax": 21,
+        "questMin": 13,
+        "slayerExpPerMob": 9.4,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Even... slimier": {
+        "mobID": "minecraft:slime",
+        "questAverage": 77,
+        "questSkew": 21,
+        "questMax": 88,
+        "questMin": 56,
+        "slayerExpPerMob": 3.4,
+        "lootRolls": 20,
+        "lootOverrideDirectory": "slayerquests:slimetable"
+      },
+      "Perform my experiments": {
+        "mobID": "minecraft:zoglin",
+        "questAverage": 5,
+        "questSkew": 2,
+        "questMax": 7,
+        "questMin": 5,
+        "slayerExpPerMob": 60,
+        "lootRolls": 3,
+        "lootOverrideDirectory": "slayerquests:nethertreasure"
+      },
+      "I need their heads for... something": {
+        "mobID": "minecraft:wither_skeleton",
+        "questAverage": 20,
+        "questSkew": 7,
+        "questMax": 14,
+        "questMin": 27,
+        "slayerExpPerMob": 12.5,
+        "lootRolls": 2,
+        "lootOverrideDirectory": "slayerquests:nethertreasure"
+      },
+      "Some useful potential...": {
+        "mobID": "minecraft:creeper",
+        "questAverage": 26,
+        "questSkew": 6,
+        "questMax": 26,
+        "questMin": 20,
+        "slayerExpPerMob": 9.2,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Little.. go-.. get these things off me!": {
+        "mobID": "minecraft:vex",
+        "questAverage": 15,
+        "questSkew": 4,
+        "questMax": 19,
+        "questMin": 11,
+        "slayerExpPerMob": 15.8,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Those axes are not for chopping wood": {
+        "mobID": "minecraft:vindicator",
+        "questAverage": 18,
+        "questSkew": 7,
+        "questMax": 25,
+        "questMin": 15,
+        "slayerExpPerMob": 14.6,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Violence over trade": {
+        "mobID": "minecraft:piglin",
+        "questAverage": 37,
+        "questSkew": 10,
+        "questMax": 47,
+        "questMin": 30,
+        "slayerExpPerMob": 6.7,
+        "lootRolls": 15,
+        "lootOverrideDirectory": "minecraft:gameplay/piglin_bartering"
       }
     },
     "5": {
@@ -348,6 +498,76 @@
         "slayerExpPerMob": 160,
         "lootRolls": 10,
         "lootOverrideDirectory": "minecraft:gameplay/sniffer_digging"
+      },
+      "You probably need a machine for this": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 85,
+        "questSkew": 20,
+        "questMax": 105,
+        "questMin": 65,
+        "slayerExpPerMob": 7.8,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "An entire battalion": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 43,
+        "questSkew": 14,
+        "questMax": 57,
+        "questMin": 29,
+        "slayerExpPerMob": 11.2,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "The hell are those things": {
+        "mobID": "minecraft:ravager",
+        "questAverage": 9,
+        "questSkew": 2,
+        "questMax": 9,
+        "questMin": 7,
+        "slayerExpPerMob": 60,
+        "lootRolls": 2,
+        "lootOverrideDirectory": ""
+      },
+      "They ate my bathroom!": {
+        "mobID": "minecraft:silverfish",
+        "questAverage": 30,
+        "questSkew": 10,
+        "questMax": 40,
+        "questMin": 20,
+        "slayerExpPerMob": 18.6,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "You're going to have to visit a few houses": {
+        "mobID": "minecraft:evoker",
+        "questAverage": 10,
+        "questSkew": 5,
+        "questMax": 15,
+        "questMin": 5,
+        "slayerExpPerMob": 63,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Cleanse the seas": {
+        "mobID": "minecraft:guardian",
+        "questAverage": 30,
+        "questSkew": 15,
+        "questMax": 45,
+        "questMin": 15,
+        "slayerExpPerMob": 36,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "Fetch me the stars": {
+        "mobID": "minecraft:wither",
+        "questAverage": 1,
+        "questSkew": 12,
+        "questMax": 2,
+        "questMin": 1,
+        "slayerExpPerMob": 400,
+        "lootRolls": 10,
+        "lootOverrideDirectory": "slayerquests:nethertreasure"
       }
     },
     "6": {
@@ -377,7 +597,7 @@
         "questSkew": 2,
         "questMax": 8,
         "questMin": 6,
-        "slayerExpPerMob": 165,
+        "slayerExpPerMob": 120,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
       },
@@ -390,6 +610,36 @@
         "slayerExpPerMob": 500,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
+      },
+      "THERE'S SO MANY": {
+        "mobID": "minecraft:zombie",
+        "questAverage": 250,
+        "questSkew": 50,
+        "questMax": 300,
+        "questMin": 200,
+        "slayerExpPerMob": 3.9,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "They got EVERYONE'S knees": {
+        "mobID": "minecraft:skeleton",
+        "questAverage": 220,
+        "questSkew": 40,
+        "questMax": 260,
+        "questMin": 180,
+        "slayerExpPerMob": 4.2,
+        "lootRolls": 1,
+        "lootOverrideDirectory": ""
+      },
+      "We can light the world": {
+        "mobID": "minecraft:wither",
+        "questAverage": 5,
+        "questSkew": 3,
+        "questMax": 8,
+        "questMin": 5,
+        "slayerExpPerMob": 250,
+        "lootRolls": 35,
+        "lootOverrideDirectory": "slayerquests:nethertreasure"
       }
     }
   }
