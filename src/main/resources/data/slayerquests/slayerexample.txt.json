@@ -1,0 +1,22 @@
+{
+  // You cannot change the name of this object
+  "tiers":
+  {
+    // A loot table MUST exist at "slayerquests:tier_loot/tiername" or a runtime exception will be thrown
+    "Any tier name here":
+    {
+      "Any quest name here":
+      {
+        // None of these variable names can be changed
+        "mobID": "", // This must be the namespace and ID of a registered LivingEntity i.e "minecraft:cow"
+        "questAverage": 0, // Quests generate their cap on a bell curve focussed on "questAverage",
+        "questSkew": 0, // varied by "questSkew",
+        "questMax": 0,// and is re-calculated if it isn't within the bounds of "questMin" or "questMax"
+        "questMin": 0,
+        "slayerExpPerMob": 0, // The player is granted this * the calculated questCap when they hand in the quest
+        "lootRolls": 1, // How many times the reqard loot table is rolled, the built in loot tables have mulltiple rolls already
+        "lootOverrideDirectory" : "" // Allows you to change which loot table the player is rewarded from, if left as "" the default tier loot table will be applied
+      }
+    }
+  }
+}

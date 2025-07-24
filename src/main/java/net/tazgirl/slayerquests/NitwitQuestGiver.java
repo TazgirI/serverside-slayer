@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -35,48 +36,69 @@ public class NitwitQuestGiver
     @SubscribeEvent
     public static void NitwitInteracted(PlayerInteractEvent.EntityInteractSpecific event)
     {
-        if(event.getTarget() instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT && !event.getLevel().isClientSide)
+        LivingEntity questGiverMob;
+        Entity eventTarget = event.getTarget();
+
+        if(event.getLevel().isClientSide || !(eventTarget instanceof LivingEntity))
         {
-            ServerPlayer player = (ServerPlayer) event.getEntity();
-            DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
+            return;
+        }
 
-            switch(SlayerQuestsLibraryFuncs.GetQuestState(currentQuest))
-            {
-                case "unfulfilled":
-
-                    player.sendSystemMessage(Component.literal("You still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent() + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob()) + "s")));
-
-                    return;
-                case "fulfilled":
-
-                    player.sendSystemMessage(Component.literal("Thank you for the help"));
-                    SlayerQuestsLibraryFuncs.DoAttemptRewardQuest(player, true);
-                    break;
-                case "unassigned":
-
-                    SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(villager);
-                    DataAttachment.questHolderRecord villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager);
-                    if(Objects.equals(villagerStoredQuest.questName(), "") || !CalculatePossibleTiers(player).contains(SlayerQuestsLibraryFuncs.GetTierObjectFromName(villagerStoredQuest.tierName())))
-                    {
-                        setVillagersQuest(villager, player);
-                        SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(villager);
-                        villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(villager);
-                    }
+        if(eventTarget instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT)
+        {
+            questGiverMob = villager;
+        }
+        else if(eventTarget.getData(DataAttachment.EXTENDS_NITWIT_BEHAVIOUR.get()).extendsNitwitBehaviour())
+        {
+            questGiverMob = (LivingEntity) eventTarget;
+        }
+        else
+        {
+            return;
+        }
 
 
 
-                    SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(player, villagerStoredQuest);
-                    SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(player);
+        ServerPlayer player = (ServerPlayer) event.getEntity();
+        DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
 
-                    SlayerQuestsLibraryFuncs.Quest storedQuestObject = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsObject(villager);
+        switch(SlayerQuestsLibraryFuncs.GetQuestState(currentQuest))
+        {
+            case "unfulfilled":
+
+                player.sendSystemMessage(Component.literal("You still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent() + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob()) + "s")));
+
+                return;
+            case "fulfilled":
+
+                player.sendSystemMessage(Component.literal("Thank you for the help"));
+                SlayerQuestsLibraryFuncs.DoAttemptRewardQuest(player, true);
+                break;
+            case "unassigned":
+
+                SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(questGiverMob);
+                DataAttachment.questHolderRecord villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(questGiverMob);
+                if(Objects.equals(villagerStoredQuest.questName(), "") || !CalculatePossibleTiers(player).contains(SlayerQuestsLibraryFuncs.GetTierObjectFromName(villagerStoredQuest.tierName())))
+                {
+                    setVillagersQuest(questGiverMob, player);
+                    SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(questGiverMob);
+                    villagerStoredQuest = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(questGiverMob);
+                }
 
 
-                    sendQuestPrompt(player, SlayerQuestsLibraryFuncs.GetMobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName(), villagerStoredQuest.timeWhenStored());
 
-                    break;
-            }
+                SlayerQuestsLibraryFuncs.DoSetStoredQuestHolder(player, villagerStoredQuest);
+                SlayerQuestsLibraryFuncs.DoRefreshStoredQuestHolderTime(player);
+
+                SlayerQuestsLibraryFuncs.Quest storedQuestObject = SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsObject(questGiverMob);
+
+
+                sendQuestPrompt(player, SlayerQuestsLibraryFuncs.GetMobPlaintext(storedQuestObject.mob), villagerStoredQuest.tierName(), villagerStoredQuest.timeWhenStored());
+
+                break;
         }
     }
+
 
 
 
@@ -116,7 +138,7 @@ public class NitwitQuestGiver
         return tiersToReturn;
     }
 
-    private static void setVillagersQuest(Villager villager, Player player)
+    private static void setVillagersQuest(LivingEntity villager, Player player)
     {
         List<SlayerQuestsLibraryFuncs.Tier> possibleTiers = CalculatePossibleTiers(player);
         SlayerQuestsLibraryFuncs.Tier tierToGive = possibleTiers.get((int) (Math.pow(Math.random(), 0.5) * possibleTiers.size()));
