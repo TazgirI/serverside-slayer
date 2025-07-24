@@ -612,42 +612,6 @@ public class SlayerQuestsLibraryFuncs
     }
 
 
-    //=======================
-    //   File Manipulation
-    //=======================
 
 
-    //fileTOCopyDir should be something like "slayerquests:SlayerQuests.json"
-    public static boolean DoJSONToConfig(String locationToCopyDir, MinecraftServer server, Boolean checkForExisting) throws IOException
-    {
-        Path configDir = FMLPaths.CONFIGDIR.get();
-        Path outputFile = configDir.resolve("SlayerQuests.json");
-
-        if(!Files.notExists(outputFile) && checkForExisting)
-        {
-            return true;
-        }
-
-        ResourceManager resourceManager = server.getResourceManager();
-
-        ResourceLocation locationToCopy = ResourceLocation.parse(locationToCopyDir);
-
-        if(resourceManager.getResource(locationToCopy).isPresent())
-        {
-            Resource fileToCopy = resourceManager.getResource(locationToCopy).get();
-            try(InputStream inputFile = fileToCopy.open())
-            {
-                Files.copy(inputFile,outputFile, StandardCopyOption.REPLACE_EXISTING);
-                return true;
-            }
-            catch (IOException exception)
-            {
-                throw new RuntimeException("Failed to copy \"" + locationToCopyDir + "\" to the ConfigDir");
-            }
-        }
-
-        return false;
-
-
-    }
 }

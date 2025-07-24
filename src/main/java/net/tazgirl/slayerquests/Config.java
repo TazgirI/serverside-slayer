@@ -16,7 +16,6 @@ public class Config
     static final ModConfigSpec SPEC = getBuilder().build();
 
     public static int bellCurveMaxPasses;
-    public static boolean copyOverJSON;
     public static boolean validateLootTables;
 
 
@@ -27,7 +26,6 @@ public class Config
 
     static ModConfigSpec.IntValue BELL_CURVE_MAX_PASSES;
 
-    static ModConfigSpec.BooleanValue COPY_OVER_JSON;
     static ModConfigSpec.BooleanValue VALIDATE_LOOT_TABLES;
     static ModConfigSpec.BooleanValue ENABLE_NITWIT_QUESTS;
     static ModConfigSpec.ConfigValue<List<? extends Integer>> TIER_LEVEL_THRESHOLDS;
@@ -41,7 +39,6 @@ public class Config
         builder.push("general");
 
         BELL_CURVE_MAX_PASSES = builder.comment("How many times the bell curve attempts to be within the min/max for a given quest before just returning the average").defineInRange("bellCurveMaxPasses", 10, 1, Integer.MAX_VALUE);
-        COPY_OVER_JSON = builder.comment("Do copy the SlayerQuests.json to the config dir if none exists already").define("copyOverJSON", true);
         VALIDATE_LOOT_TABLES = builder.comment("Do validate loot table exists for each tier and throw error if not (DANGER: Do not touch unless using an addon that explicitly handles/requires this, will almost definitely cause a crash if you are not)").define("validateLootTables", true);
 
         builder.pop();
@@ -64,7 +61,6 @@ public class Config
     static void onLoad(final ModConfigEvent event)
     {
         bellCurveMaxPasses = BELL_CURVE_MAX_PASSES.get();
-        copyOverJSON = COPY_OVER_JSON.get();
         validateLootTables = VALIDATE_LOOT_TABLES.get();
 
         enableNitwitQuests = ENABLE_NITWIT_QUESTS.get();

@@ -81,12 +81,6 @@ public class SlayerQuests
     @SubscribeEvent
     private static void Setup(ServerAboutToStartEvent event) throws IOException
     {
-
-        if(Config.copyOverJSON)
-        {
-            SlayerQuestsLibraryFuncs.DoJSONToConfig("slayerquests:SlayerQuests.json",event.getServer(),true);
-        }
-
         tiers = StoreJSON.ProcessJSON(event.getServer().getResourceManager(),event.getServer());
         validTiers = StoreJSON.ValidTierNames(event.getServer().getResourceManager());
         levelBoundries = CalcLevelBoundriesList();
