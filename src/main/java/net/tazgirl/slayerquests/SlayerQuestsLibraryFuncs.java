@@ -7,8 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,13 +17,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.loading.FMLPaths;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class SlayerQuestsLibraryFuncs
@@ -98,11 +90,12 @@ public class SlayerQuestsLibraryFuncs
 
     public static class Tier
     {
-        public String name;
+        String name;
         List<Quest> quests = new ArrayList<>();
         List<String> validQuestNames;
+        int requiredSlayerLevel;
 
-        public void DoAddSet(String questName, String questMob, int questMean, int questSkew, float questExp, int questMin, int questMax, int questLootRolls, String questLootOverrideDirectory, MinecraftServer server)
+        public void DoAddQuest(String questName, String questMob, int questMean, int questSkew, float questExp, int questMin, int questMax, int questLootRolls, String questLootOverrideDirectory, MinecraftServer server)
         {
             Quest newSet = new Quest();
             newSet.name = questName;
@@ -121,7 +114,17 @@ public class SlayerQuestsLibraryFuncs
 
         }
 
-        protected void DoSetName(String newName)
+        public void DoSetRequiredSlayerLevel(int newRequirment)
+        {
+            requiredSlayerLevel = newRequirment;
+        }
+
+        public int GetRequiredSlayerLevel()
+        {
+            return requiredSlayerLevel;
+        }
+
+        void DoSetName(String newName)
         {
             name = newName;
         }
@@ -187,6 +190,11 @@ public class SlayerQuestsLibraryFuncs
             }
 
             return null;
+        }
+
+        public String getName()
+        {
+            return name;
         }
 
     }
@@ -380,7 +388,7 @@ public class SlayerQuestsLibraryFuncs
         int total = 0;
         for(int i = 0; i < level; i++)
         {
-            total += SlayerQuests.levelBoundries.get(i + 1);
+            total += CalcLevelToExp(i + 1);
         }
 
         return total;

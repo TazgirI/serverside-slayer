@@ -24,7 +24,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import static net.minecraft.commands.Commands.argument;
 
@@ -55,7 +54,7 @@ public class NitwitQuestGiver
         }
         else if(eventTarget.getData(DataAttachment.EXTENDS_NITWIT_BEHAVIOUR.get()).extendsNitwitBehaviour())
         {
-            if(!Config.enableNitwitQuestsExtension)
+            if(!Config.enableNitwitBehaviourExtension)
             {
                 SlayerQuests.LOGGER.error("Right clicked entity with the EXTENDS_NITWIT_BEHAVIOUR attachment but enableNitwitQuestsExtension is disabled in Config");
                 return;
@@ -115,33 +114,14 @@ public class NitwitQuestGiver
     private static List<SlayerQuestsLibraryFuncs.Tier> CalculatePossibleTiers(Player player)
     {
         int playerSlayerLevel = SlayerQuestsLibraryFuncs.GetPlayerLevel(player);
-        List<Integer> thresholds = Config.tierLevelThresholds;
         List<SlayerQuestsLibraryFuncs.Tier> tiers = SlayerQuestsLibraryFuncs.GetTierObjectsList();
         List<SlayerQuestsLibraryFuncs.Tier> tiersToReturn = new ArrayList<>();
 
-        for(int i = 0; i < tiers.size(); i++)
+        for(SlayerQuestsLibraryFuncs.Tier tier: tiers)
         {
-            if (thresholds.size() - i >= 1)
+            if(playerSlayerLevel >= tier.GetRequiredSlayerLevel())
             {
-                if(playerSlayerLevel >= thresholds.get(i))
-                {
-                    tiersToReturn.add(tiers.get(i));
-                }
-                else
-                {
-                    break;
-                }
-            }
-            else
-            {
-                if(playerSlayerLevel >= thresholds.getLast())
-                {
-                    tiersToReturn.add(tiers.get(i));
-                }
-                else
-                {
-                    break;
-                }
+                tiersToReturn.add(tier);
             }
         }
 
@@ -239,7 +219,7 @@ public class NitwitQuestGiver
                     }
                     else
                     {
-                        MutableComponent accept = Component.literal("[accept quest anyway]").withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/grantPreparedQuest " + timeWhenStored)));
+                        MutableComponent accept = Component.literal("[I don't want this one]").withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withBold(true));
                         context.getSource().sendSuccess(() -> Component.literal("This is all I can offer at the moment \n").append(accept), false);
                     }
 

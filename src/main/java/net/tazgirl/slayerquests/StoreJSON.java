@@ -60,7 +60,7 @@ public class StoreJSON
 
                 if(BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(currentQuest.get("mobID").getAsString())))
                 {
-                    currentTier.DoAddSet(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsFloat(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt(),currentQuest.get("lootRolls").getAsInt(),currentQuest.get("lootOverrideDirectory").getAsString(), server);
+                    currentTier.DoAddQuest(currentTierQuests.get(j),currentQuest.get("mobID").getAsString(),currentQuest.get("questAverage").getAsInt(),currentQuest.get("questSkew").getAsInt(),currentQuest.get("slayerExpPerMob").getAsFloat(),currentQuest.get("questMin").getAsInt(),currentQuest.get("questMax").getAsInt(),currentQuest.get("lootRolls").getAsInt(),currentQuest.get("lootOverrideDirectory").getAsString(), server);
                 }
                 else
                 {
@@ -134,6 +134,26 @@ public class StoreJSON
         catch (IOException e)
         {
             throw new RuntimeException("Failed to read SlayerQuests.json", e);
+        }
+    }
+
+    static void SetTierThresholds()
+    {
+        List<Integer> tierLevelThresholds = Config.tierLevelThresholds;
+        SlayerQuestsLibraryFuncs.Tier currentTier;
+
+        for(int i = 0; i < SlayerQuests.tiers.size(); i++)
+        {
+            currentTier = SlayerQuests.tiers.get(i);
+
+            if(!(tierLevelThresholds.size() < i + 1))
+            {
+                currentTier.requiredSlayerLevel = tierLevelThresholds.get(i);
+            }
+            else
+            {
+                currentTier.requiredSlayerLevel = tierLevelThresholds.getLast();
+            }
         }
     }
 

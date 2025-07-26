@@ -98,6 +98,7 @@ public class SlayerQuests
         {
             StoreJSON.ValidateTierLoot(validTiers, event.getServer());
         }
+        StoreJSON.SetTierThresholds();
     }
 
     public static List<Integer> CalcLevelBoundriesList()
