@@ -25,3 +25,4 @@ run-data
 
 repo
 *.yaml
+src/main/java/net/tazgirl/slayerquests/TestQuick.java

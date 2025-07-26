@@ -362,7 +362,7 @@ public class SlayerQuestsLibraryFuncs
         return player.getData(DataAttachment.SLAYER_EXPERIENCE.get()).level();
     }
 
-    //TODO: Adjust level formulae and add config
+    //TODO: Add config to adjust formulae
     public static int CalcExpToLevel(float exp)
     {
         for(int i = 0; i < 100; i++)
@@ -380,7 +380,7 @@ public class SlayerQuestsLibraryFuncs
         int total = 0;
         for(int i = 0; i < level; i++)
         {
-            total += CalcLevelToExp(i + 1);
+            total += SlayerQuests.levelBoundries.get(i + 1);
         }
 
         return total;
@@ -514,6 +514,11 @@ public class SlayerQuestsLibraryFuncs
 
         return entityType.getDescription().getString();
 
+    }
+
+    public static void ReCalcLevelBoundriesList()
+    {
+        SlayerQuests.levelBoundries = SlayerQuests.CalcLevelBoundriesList();
     }
 
     //==================

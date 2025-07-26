@@ -100,7 +100,7 @@ public class SlayerQuests
         }
     }
 
-    private static List<Integer> CalcLevelBoundriesList()
+    public static List<Integer> CalcLevelBoundriesList()
     {
         List<Integer> listToReturn = new ArrayList<>();
 

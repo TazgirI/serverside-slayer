@@ -109,7 +109,7 @@
         "questSkew": 1,
         "questMax": 5,
         "questMin": 3,
-        "slayerExpPerMob": 3,
+        "slayerExpPerMob": 5,
         "lootRolls": 1,
         "lootOverrideDirectory": ""
       },
@@ -637,7 +637,7 @@
         "questSkew": 3,
         "questMax": 8,
         "questMin": 5,
-        "slayerExpPerMob": 250,
+        "slayerExpPerMob": 200,
         "lootRolls": 35,
         "lootOverrideDirectory": "slayerquests:nethertreasure"
       }

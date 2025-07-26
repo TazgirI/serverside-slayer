@@ -46,10 +46,20 @@ public class NitwitQuestGiver
 
         if(eventTarget instanceof Villager villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT)
         {
+            if(!Config.enableNitwitQuests)
+            {
+                SlayerQuests.LOGGER.debug("Right clicked Nitwit but enableNitwitQuests is disabled in Config");
+                return;
+            }
             questGiverMob = villager;
         }
         else if(eventTarget.getData(DataAttachment.EXTENDS_NITWIT_BEHAVIOUR.get()).extendsNitwitBehaviour())
         {
+            if(!Config.enableNitwitQuestsExtension)
+            {
+                SlayerQuests.LOGGER.error("Right clicked entity with the EXTENDS_NITWIT_BEHAVIOUR attachment but enableNitwitQuestsExtension is disabled in Config");
+                return;
+            }
             questGiverMob = (LivingEntity) eventTarget;
         }
         else
