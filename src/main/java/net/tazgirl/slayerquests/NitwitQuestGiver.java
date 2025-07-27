@@ -160,7 +160,7 @@ public class NitwitQuestGiver
             {
                 DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
 
-                player.sendSystemMessage(Component.literal("Reminder, you still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent()) + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob() + "s")).withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
+                player.sendSystemMessage(Component.literal("Reminder, you still need to kill " + (currentQuest.questCap() - currentQuest.questCurrent()) + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob())  + "s").withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
             }
             else if(playerState.equals("fulfilled"))
             {
@@ -197,7 +197,10 @@ public class NitwitQuestGiver
                     {
                         DataAttachment.currentQuestRecord currentQuest = SlayerQuestsLibraryFuncs.GetPlayersQuestAsRecord(player);
                         context.getSource().sendSuccess(() -> Component.literal("Quest granted, happy hunting.\nCome back after you've killed " + currentQuest.questCap() + " " + SlayerQuestsLibraryFuncs.GetMobPlaintext(currentQuest.mob()) + "s"), false);
-                        SlayerQuestsLibraryFuncs.DoClearStoredQuestHolder((LivingEntity) player.level().getEntity(SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(player).sourceUuid()));
+                        if(player.level().getEntity(SlayerQuestsLibraryFuncs.GetStoredQuestHolderAsRecord(player).sourceUuid()) instanceof LivingEntity entity)
+                        {
+                            SlayerQuestsLibraryFuncs.DoClearStoredQuestHolder(entity);
+                        }
                         return 1;
                     }
                     else
