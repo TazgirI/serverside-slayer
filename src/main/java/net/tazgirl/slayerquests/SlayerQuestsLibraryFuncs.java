@@ -20,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
+// TODO: Separate each section to different jars i.e SlayerQuestLibraryFuncsRandom.GetRandomTier()
 public class SlayerQuestsLibraryFuncs
 {
 
