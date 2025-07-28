@@ -529,6 +529,15 @@ public class SlayerQuestsLibraryFuncs
         SlayerQuests.levelBoundries = SlayerQuests.CalcLevelBoundriesList();
     }
 
+    public static void DoMakeLivingEntityExtendNitwitBehaviour(LivingEntity entity)
+    {
+        entity.setData(DataAttachment.EXTENDS_NITWIT_BEHAVIOUR.get(), new DataAttachment.extendsNitwitBehaviourRecord(true));
+    }
+    public static void DoMakeLivingEntityNotExtendNitwitBehaviour(LivingEntity entity)
+    {
+        entity.setData(DataAttachment.EXTENDS_NITWIT_BEHAVIOUR.get(), new DataAttachment.extendsNitwitBehaviourRecord(false));
+    }
+
     //==================
     //   Fetch Random
     //==================
