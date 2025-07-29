@@ -31,8 +31,8 @@ public class SlayerQuestsLibraryFuncs
 
     public static class Quest
     {
-        public String name;
-        public String tier;
+        String name;
+        String tier;
         public String mob;
         public int mean;
         public int skew;
