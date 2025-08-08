@@ -139,6 +139,9 @@ public class StoreJSON
 
     static void SetTierThresholds()
     {
+        if(SlayerQuests.tiers == null){return;}
+        if(SlayerQuests.tiers.isEmpty()){return;}
+
         List<Integer> tierLevelThresholds = Config.tierLevelThresholds;
         SlayerQuestsLibraryFuncs.Tier currentTier;
 

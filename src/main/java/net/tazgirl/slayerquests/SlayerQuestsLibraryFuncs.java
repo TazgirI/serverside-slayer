@@ -62,25 +62,27 @@ public class SlayerQuestsLibraryFuncs
             return mean;
         }
 
-        public void SetLootDirectory(String lootOverride, MinecraftServer server)
+        public boolean SetLootDirectory(String lootOverride, MinecraftServer server)
         {
-            ResourceLocation tempLootLocation;
+
 
             if (Objects.equals(lootOverride, ""))
             {
-                tempLootLocation = ResourceLocation.parse("slayerquests:tier_loot/" + tier);
+                lootLocation = ResourceLocation.parse("slayerquests:tier_loot/" + tier);
             }
             else
             {
                 if(!StoreJSON.VerifyLootTable(lootOverride,server))
                 {
                     SlayerQuests.LOGGER.error("lootOverrideDirectory of \"" + lootOverride + "\", cannot be found or does not exist, reverting to default");
-                    tempLootLocation = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier);
+                    lootLocation = ResourceLocation.parse("slayerquests:loot_tables/tier_loot/" + tier);
+                    return false;
                 }
-                tempLootLocation = ResourceLocation.tryParse(lootOverride);
+                lootLocation = ResourceLocation.tryParse(lootOverride);
             }
 
-            lootLocation = tempLootLocation;
+            return true;
+
         }
 
         public void GrantToPlayer(Player player)

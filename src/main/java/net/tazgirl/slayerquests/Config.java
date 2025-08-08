@@ -5,6 +5,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class Config
 
     public static boolean enableNitwitQuests;
     public static boolean enableNitwitBehaviourExtension;
-    public static List<Integer> tierLevelThresholds;
+    public static List<Integer> tierLevelThresholds = new ArrayList<>();
     public static int questTimeoutTicks;
 
     static ModConfigSpec.IntValue BELL_CURVE_MAX_PASSES;
@@ -63,7 +64,7 @@ public class Config
 
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event)
+    static void onLoad(final ModConfigEvent.Loading event)
     {
         bellCurveMaxPasses = BELL_CURVE_MAX_PASSES.get();
         validateLootTables = VALIDATE_LOOT_TABLES.get();
@@ -72,6 +73,22 @@ public class Config
         enableNitwitQuests = ENABLE_NITWIT_QUESTS.get();
         enableNitwitBehaviourExtension = ENABLE_NITWIT_BEHAVIOUR_EXTENSION.get();
         tierLevelThresholds = TIER_LEVEL_THRESHOLDS.get().stream().collect(Collectors.toUnmodifiableList());
+        questTimeoutTicks = QUEST_TIMEOUT_TICKS.get();
+
+    }
+
+    @SubscribeEvent
+    static void onReload(final ModConfigEvent.Reloading event)
+    {
+        bellCurveMaxPasses = BELL_CURVE_MAX_PASSES.get();
+        sendQuestReminder = SEND_QUEST_REMINDER.get();
+
+        enableNitwitQuests = ENABLE_NITWIT_QUESTS.get();
+        enableNitwitBehaviourExtension = ENABLE_NITWIT_BEHAVIOUR_EXTENSION.get();
+
+        tierLevelThresholds = TIER_LEVEL_THRESHOLDS.get().stream().collect(Collectors.toUnmodifiableList());
+        StoreJSON.SetTierThresholds();
+
         questTimeoutTicks = QUEST_TIMEOUT_TICKS.get();
 
     }
